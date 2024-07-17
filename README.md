@@ -51,10 +51,10 @@ pip install -r requirements.txt
 To run the app (be careful with the paths of the files in the app):
 
 ```shell
-conda create --name my-awesome-streamlit python=3.9
-conda activate my-awesome-streamlit
+conda create --name venv python=3.12.3
+conda activate venv
 pip install -r requirements.txt
-streamlit run app.py
+streamlit run streamlit_app.py
 ```
 
 The app should then be available at [localhost:8501](http://localhost:8501).
