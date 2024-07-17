@@ -12,5 +12,3 @@ statsmodels==0.14.2
 xgboost==2.1.0
 shap==0.46.0
 pydrive
-google-auth-oauthlib
-gdown==5.2.0
