@@ -86,18 +86,12 @@ if page == pages[2]:
     st.write("### Modelling")
     
     try:
-        # Google Drive file ID
-        file_id = '1vN3977AqtnGHsGz32gj0fdUXLafCjFfQ'  # Replace with your file ID
-        url = f'https://drive.google.com/uc?id={file_id}'
-
         @st.cache_resource
         def load_model(url):
-            output = 'model.joblib'
-            gdown.download(url, output, quiet=False)
-            model = joblib.load(output)
+            model = joblib.load(url)
             return model
 
-        model = load_model(url)
+        model = load_model('model.joblib')
         xgboost = model.named_estimators_['XGboost']
         rf = model.named_estimators_['RF']
         logreg = model.named_estimators_['LogReg']
