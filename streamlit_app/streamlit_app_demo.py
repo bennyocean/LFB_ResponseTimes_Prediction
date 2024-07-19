@@ -110,7 +110,7 @@ if page == pages[3]:
     elif plot_type == "PCA Component Plot":
         pc_x = st.selectbox("Select X-axis PC", pca_feature_names, index=0)
         pc_y = st.selectbox("Select Y-axis PC", pca_feature_names, index=1)
-        fig = results.plot_pca_components(X_test_pca, pc_x, pc_y)
+        fig = results.plot_pca_components(X_test_pca_df, pc_x, pc_y)
         st.pyplot(fig)
     else:
         st.write("Please select a plot type.")
