@@ -8,7 +8,6 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve,
 from PIL import Image
 import shap
 import joblib
-import gdown
 import os
 
 # Results
@@ -178,7 +177,18 @@ def plot_pca_components(X_test_pca, pc_x, pc_y):
 
 
 ### 3 Interpretability
-### 3.1 Mean Shap Value Calculation & Plot
+### 3.1 Mean Shap Value Comparison in the Voting Classifier
+
+def plot_shap_across_models():
+    mean_abs_shap_comparison = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'mean_abs_shap_comparison.png')
+    if os.path.exists(mean_abs_shap_comparison):
+        default_plot_image = Image.open(mean_abs_shap_comparison)
+        return default_plot_image
+    else:
+        return None
+
+
+### 3.2 Mean Shap Value Calculation & Plot
 
 def get_shap_values(model, X, model_type='tree'):
     if model_type == 'tree':
@@ -189,42 +199,162 @@ def get_shap_values(model, X, model_type='tree'):
         explainer = shap.KernelExplainer(model.predict, X)
     shap_values = explainer.shap_values(X)
     return shap_values, explainer
-    
-def plot_shap_values(X_test_pca, pca_feature_names, model_name):
-    model = load_model()
+
+def plot_shap_values(model_name):
     if model_name == 'XGBoost':
-        fitted_model = model.named_estimators_['XGboost']
-        model_type = 'tree'
+        shap_sum_plot_xgboost = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_sum_plot_xgboost.png')
+        if os.path.exists(shap_sum_plot_xgboost):
+            plt_xgboost = Image.open(shap_sum_plot_xgboost)
+            return plt_xgboost
+        else:
+            return None
     elif model_name == 'Random Forest':
-        fitted_model = model.named_estimators_['RF']
-        model_type = 'tree'
+        shap_sum_plot_rf = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_sum_plot_rf.png')
+        if os.path.exists(shap_sum_plot_rf):
+            plt_rf = Image.open(shap_sum_plot_rf)
+            return plt_rf
+        else:
+            return None
     elif model_name == 'Logistic Regression':
-        fitted_model = model.named_estimators_['LogReg']
-        model_type = 'linear'
+        shap_sum_plot_logreg = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_sum_plot_logreg.png')
+        if os.path.exists(shap_sum_plot_logreg):
+            plt_logreg = Image.open(shap_sum_plot_logreg)
+            return plt_logreg
+        else:
+            return None
     else:
         return None
 
-    shap_values, explainer = get_shap_values(fitted_model, X_test_pca, model_type)
-    
-    plt.figure()
-    shap.summary_plot(shap_values, X_test_pca, feature_names=pca_feature_names, plot_type="bar", show=False)
-    plt.title(f'SHAP Summary Plot for {model_name}')
-    return plt.gcf()
-
-### 3.2 Mean Shap Value Comparison in the Voting Classifier
-
-def plot_shap_across_models():
-    mean_abs_shap_comparison = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'mean_abs_shap_comparison.png')
-    if os.path.exists(mean_abs_shap_comparison):
-        default_plot_image = Image.open(mean_abs_shap_comparison)
-        return default_plot_image
-    else:
-        return None    
-
 ### 3.3 SHAP Violin Plots for for Each Model
 
-### 3.4 Average SHAP Violin Plot for Voting Classifier
+def plot_violin_votingclf():
+    violin_votingclf = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'img/shap_violin_plot_votingclf.png')
+    if os.path.exists(violin_votingclf):
+        violin_votingclf_img = Image.open(violin_votingclf)
+        return violin_votingclf_img
+    else:
+        return None
 
-### 3.5 Local Interpretation for one Observation
+def plot_shap_violins(model_name):
+    if model_name == 'XGBoost':
+        shap_violin_xgboost = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_violin_plot_xgboost.png')
+        if os.path.exists(shap_violin_xgboost):
+            violin_xgboost = Image.open(shap_violin_xgboost)
+            return violin_xgboost
+        else:
+            return None
+    elif model_name == 'Random Forest':
+        shap_violin_rf = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_violin_plot_rf.png')
+        if os.path.exists(shap_violin_rf):
+            violin_rf = Image.open(shap_violin_rf)
+            return violin_rf
+        else:
+            return None
+    elif model_name == 'Logistic Regression':
+        shap_violin_logreg = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_violin_plot_logreg.png')
+        if os.path.exists(shap_violin_logreg):
+            violin_logreg = Image.open(shap_violin_logreg)
+            return violin_logreg
+        else:
+            return None
+    else:
+        return None
 
-### 3.6 Interactive Plot for first 1000 Observations
+### 3.4 Local Interpretation for one Observation
+
+# Load SHAP values and explainers once at the start
+shap_values_paths = {
+    'XGBoost': ('..', '..', 'notebooks', 'shap_values_xgb.pkl', 'explainer_xgb.pkl'),
+    'Random Forest': ('..', '..', 'notebooks', 'shap_values_rf.pkl', 'explainer_rf.pkl'),
+    'Logistic Regression': ('..', '..', 'notebooks', 'shap_values_logreg.pkl', 'explainer_logreg.pkl')
+}
+
+shap_values = {}
+explainers = {}
+
+for model_name, paths in shap_values_paths.items():
+    shap_values_path = os.path.join(os.path.dirname(__file__), *paths[:3])
+    explainer_path = os.path.join(os.path.dirname(__file__), *paths[3:])
+    
+    if os.path.exists(shap_values_path) and os.path.exists(explainer_path):
+        shap_values[model_name] = joblib.load(shap_values_path)
+        explainers[model_name] = joblib.load(explainer_path)
+
+def local_interpretation(model_name, X_test_pca, pca_feature_names, index=3):
+    if model_name in shap_values and model_name in explainers:
+        shap_values_model = shap_values[model_name]
+        explainer_model = explainers[model_name]
+        
+        # Round the values to three decimals
+        rounded_shap_values = np.round(shap_values_model[index, :], 3)
+        rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
+        
+        force_plot = shap.force_plot(
+            explainer_model.expected_value, 
+            rounded_shap_values, 
+            rounded_X_test_pca, 
+            feature_names=pca_feature_names, 
+            matplotlib=True
+        )
+        
+        return force_plot
+    
+    elif model_name == 'Combined Voting Classifier':
+        if all(m in shap_values and m in explainers for m in ['XGBoost', 'Random Forest', 'Logistic Regression']):
+            shap_values_combined = (shap_values['XGBoost'] + shap_values['Random Forest'] + shap_values['Logistic Regression']) / 3
+            rounded_shap_values_combined = np.round(shap_values_combined[index, :], 3)
+            rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
+            
+            force_plot_combined = shap.force_plot(
+                explainers['XGBoost'].expected_value, 
+                rounded_shap_values_combined, 
+                rounded_X_test_pca, 
+                feature_names=pca_feature_names, 
+                matplotlib=True
+            )
+            
+            return force_plot_combined
+    
+    return None
+
+### 3.5 Interactive Plot for first 1000 Observations
+
+def interactive_force_plot(model_name, X_test_pca, pca_feature_names, n_observations=1000):
+    if model_name in shap_values and model_name in explainers:
+        shap_values_model = shap_values[model_name]
+        explainer_model = explainers[model_name]
+        
+        # Round the values to three decimals
+        rounded_shap_values = np.round(shap_values_model[:n_observations], 3)
+        rounded_X_test_pca = np.round(X_test_pca.iloc[:n_observations], 3)
+        
+        force_plot = shap.force_plot(
+            explainer_model.expected_value, 
+            rounded_shap_values, 
+            rounded_X_test_pca, 
+            feature_names=pca_feature_names
+        )
+        
+        return force_plot
+    
+    elif model_name == 'Combined Voting Classifier':
+        if all(m in shap_values and m in explainers for m in ['XGBoost', 'Random Forest', 'Logistic Regression']):
+            shap_values_combined = (shap_values['XGBoost'] + shap_values['Random Forest'] + shap_values['Logistic Regression']) / 3
+            rounded_shap_values_combined = np.round(shap_values_combined[:n_observations], 3)
+            rounded_X_test_pca = np.round(X_test_pca.iloc[:n_observations], 3)
+            
+            force_plot_combined = shap.force_plot(
+                explainers['XGBoost'].expected_value, 
+                rounded_shap_values_combined, 
+                rounded_X_test_pca, 
+                feature_names=pca_feature_names
+            )
+            
+            return force_plot_combined
+    
+    return None
+
+# 4 Feature Interpretation
+### 4.1 PC Load Reconstruction
+
+### 4.2 PC & Feature Correlation Matrix
