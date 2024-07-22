@@ -6,12 +6,14 @@ import numpy as np
 import os
 import sys
 from pathlib import Path
-from tabs.eda import show_data_exploration
+import tabs.eda as eda
+import tabs.results as results
 
-data_path = Path(__file__).resolve().parent / 'data' / 'dataframe_compressed.parquet'
-image_path = Path(__file__).resolve().parent / 'img' / 'average_total_response_time.png'
+data_premodel_path = Path(__file__).resolve().parents[1] / 'data' / 'dataframe_compressed.parquet'
+image_path = Path(__file__).resolve().parents[1] / 'img' / 'average_total_response_time.png'
+data_path = Path(__file__).resolve().parents[1] / 'data' / 'df_cleaned_for_classification_models.parquet'
 
-# Streamlit UI
+# Streamlit UI 
 st.sidebar.title("Table of Contents")
 pages = ["Home", "Data", "Model", "Results", "About"]
 page = st.sidebar.radio("Go to", pages)
@@ -26,13 +28,13 @@ if page == pages[0]:
                 """)
 
 
-# Data
+# Data 
 if page == pages[1]:
-    show_data_exploration(data_path, image_path)   
+    eda.show_data_exploration(data_premodel_path, image_path)  
 
-# Model
-if page == pages[2]:
-    st.write("### Model")
+# Model 
+if page == pages[2]: 
+    st.write("### Model") 
     st.markdown("""
                 - Regression model
                 - Classification model (balancing data / recall)
@@ -50,8 +52,7 @@ if page == pages[3]:
                 - Extra: deep-learning model
                 """)
     # Ensure the tabs directory is in the Python path
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
-    import results
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs')) 
     
     st.subheader('Evaluation Summary')
     
@@ -110,7 +111,7 @@ if page == pages[3]:
         """)
     elif plot_type == "Prediction Distribution":
         fig = results.plot_pred_dist(y_pred)
-        st.pyplot(fig)
+        st.pyplot(fig) 
         st.write("""
         The distribution plot indicates that the model predicts more instances of 'Goal Reached (<=6 min)' compared to 'Goal not Reached (>6 min)', providing insight into the model's tendency and potential class imbalance in the predictions.
         """)

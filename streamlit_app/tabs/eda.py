@@ -6,8 +6,10 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter
 from PIL import Image
 from pathlib import Path
+import time
 
 def show_data_exploration(data_path, image_path):
+    
     st.title("Exploratory Data Analysis")
 
     st.markdown("""
@@ -41,12 +43,9 @@ def show_data_exploration(data_path, image_path):
                 - Transformed the variables *DistanceToStation* and *TotalResponseTime* into logarithmic form to ensure a normal distribution
     """)
 
-    df = pd.read_parquet(data_path)
-    df['Year'] = df['DateTimeCall'].dt.year
-    df = df[df['Year'] != 2024]
-    average_response_time_per_year = df.groupby('Year')['TotalResponseTime'].mean().reset_index()
 
     st.title('Data Visualization')
 
-    image = Image.open("../img/average_total_response_time.png")
+    image = Image.open(image_path)
     st.image(image, caption='Average Total Response Time Over the Years', use_column_width=True)
+
