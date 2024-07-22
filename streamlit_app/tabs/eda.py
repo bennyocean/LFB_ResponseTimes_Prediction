@@ -6,9 +6,11 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter
 from PIL import Image
 from pathlib import Path
-import time
+import os
 
-def show_data_exploration(data_path, image_path):
+image_path = os.path.join(os.path.dirname(__file__), '..', '..', 'img', 'average_total_response_time.png')
+
+def show_data_exploration():
     
     st.title("Exploratory Data Analysis")
 

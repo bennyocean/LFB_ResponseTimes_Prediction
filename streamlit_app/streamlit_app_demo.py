@@ -3,22 +3,11 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.stats as stats
-from scipy.stats import pearsonr
-from tqdm import tqdm
-import statsmodels.api as sm
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, classification_report, accuracy_score, roc_auc_score, confusion_matrix
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from imblearn.under_sampling import RandomUnderSampler
-import shap
-import joblib
-import gdown
 import os
 import sys
-
+from pathlib import Path
+import tabs.eda as eda
+import tabs.results as results
 
 # Streamlit UI
 st.sidebar.title("Table of Contents")
@@ -37,13 +26,7 @@ if page == pages[0]:
 
 # Data
 if page == pages[1]:
-    st.write("Data")
-    st.markdown("""
-                - Different origins / sources
-                - Pre-processing
-                - Feature engineering (PCA)
-                - Data visualization, statistical analysis & hypothesis tests
-                """)
+    eda.show_data_exploration()
     
 
 # Model
@@ -62,7 +45,6 @@ if page == pages[3]:
     st.title("Prediction & Interpretation")
 
     sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
-    import results
     
     results.load_eval_functions()
     results.load_pred_functions()
