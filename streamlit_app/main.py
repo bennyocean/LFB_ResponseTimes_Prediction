@@ -28,7 +28,7 @@ if page == pages[0]:
 
 # Data
 if page == pages[1]:
-    show_data_exploration(data_path, image_path)    
+    show_data_exploration(data_path, image_path)   
 
 # Model
 if page == pages[2]:

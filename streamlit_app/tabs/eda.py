@@ -8,15 +8,14 @@ from PIL import Image
 from pathlib import Path
 
 def show_data_exploration(data_path, image_path):
-    # Streamlit UI
     st.title("Exploratory Data Analysis")
 
     st.markdown("""
                 ### Data Sets
                 - **LFB Incident Dataset**: incidents handled since January 2009
-                    - *39 columns, 716,551 rows*
+                    - *39 columns, 716.551 rows*
                 - **LFB Mobilisation Dataset**: fire engines dispatched to incidents
-                    - *22 columns, 2,373,348 rows*
+                    - *22 columns, 2.373.348 rows*
                 - **Google Maps**: locations of fire stations in London
                 - **Bank Holidays Dataset**: all bank holidays in London
                 
@@ -35,13 +34,12 @@ def show_data_exploration(data_path, image_path):
                 - Removed several columns not relevant to the target variable
                 - Removed NaNs
                 - After merging datasets, feature engineering, and removing variables:
-                    - *320 columns, 1,537,704 rows*
+                    - *320 columns, 1.537.704 rows*
                     
                 ### Preparing Data for Modeling
                 - Used cyclic encoding for the time-related features to ensure correct interpretation by the model
                 - Transformed the variables *DistanceToStation* and *TotalResponseTime* into logarithmic form to ensure a normal distribution
     """)
-    data_path = Path(__file__).resolve().parents[2] / 'data' / 'dataframe_compressed.parquet'
 
     df = pd.read_parquet(data_path)
     df['Year'] = df['DateTimeCall'].dt.year
