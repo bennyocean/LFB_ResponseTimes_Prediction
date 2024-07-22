@@ -228,7 +228,7 @@ def plot_shap_values(model_name):
 ### 3.3 SHAP Violin Plots for for Each Model
 
 def plot_violin_votingclf():
-    violin_votingclf = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'img/shap_violin_plot_votingclf.png')
+    violin_votingclf = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_shap_values', 'shap_violin_plot_votingclf.png')
     if os.path.exists(violin_votingclf):
         violin_votingclf_img = Image.open(violin_votingclf)
         return violin_votingclf_img

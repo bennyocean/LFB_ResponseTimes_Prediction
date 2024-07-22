@@ -107,7 +107,7 @@ if page == pages[3]:
 
     # Prediction Plot Dropdown
     st.markdown("""
-    #### Understanding the Plots:
+    #### Prediction Evaluation:
     - **Confusion Matrix**: Visualizes the performance of the classification model by showing the number of correct and incorrect predictions for each class, helping to identify how well the model distinguishes between different classes.
     - **Distribution of Predictions**: Displays the frequency of predicted classes, providing insight into the overall prediction distribution and helping to identify any class imbalance in the model's predictions.
     - **PCA Component Plot**: The PCA component plot provides a visual indication whether the model is effectively using the principal components to distinguish between the two classes.
@@ -139,7 +139,7 @@ if page == pages[3]:
         st.write("Please select a plot type.")
 
 
-    st.subheader("3. Model Interpretability")
+    st.subheader("3. Model Interpretation")
     # Introduction to Interpretability
     st.write("""
     Model interpretability is crucial for understanding how our classification model makes predictions. It helps us identify which features are most influential in determining the response time mode, ensuring transparency and trust in the model's decisions. By analyzing interpretability metrics such as SHAP values, we can gain insights into the model's behavior, detect potential biases, and improve model performance by focusing on key features.
@@ -175,6 +175,7 @@ if page == pages[3]:
             st.write("SHAP summary plot not found.")
     
     # SHAP Violin Plots
+    st.write('#### Violin Plots of SHAP Values')
     st.write("""
     The SHAP violin plot explains the distribution and impact of the principal components on the model's predictions. Each violin represents the distribution of SHAP values for a feature, indicating both the magnitude and the direction (positive or negative) of the feature's influence on the prediction. This visualization helps in understanding which features are most important in determining the response time mode.
              """)
@@ -200,6 +201,10 @@ if page == pages[3]:
             st.write("SHAP violin plot not found.")
     
     # SHAP Local Interpretation
+    st.write('#### Local Interpretation of Model Prediction')
+    st.write("""
+    The local interpration....
+            """)
     shap_model_name = st.selectbox(
         "Choose a model for local interpretation:",
         ["Select", "XGBoost", "Random Forest", "Logistic Regression", "Combined Voting Classifier"]
@@ -221,6 +226,13 @@ if page == pages[3]:
             else:
                 st.write("SHAP force plot not found or error in generating the plot.")
 
+    
+    # Display the interactive SHAP force plot for the selected model and number of observations
+    st.write('#### Interactive SHAP Plot')
+    st.write("""
+    In addition to only plotting the SHAP values for one observation, we can also display the marginal contribution of features to our model's prediction over a pre-defined range of observations (e.g., 1000 data points). ....
+            """)
+    
     # Input for the number of observations
     n_observations = st.number_input(
         "Enter the number of observations (e.g., 1000):",
@@ -230,7 +242,6 @@ if page == pages[3]:
         step=1
     )
 
-    # Display the interactive SHAP force plot for the selected model and number of observations
     if shap_model_name != "Select":
         if st.button('Generate Interactive SHAP Force Plot'):
             force_plot = results.interactive_force_plot(shap_model_name, X_test_pca, pca_feature_names, n_observations=n_observations)
