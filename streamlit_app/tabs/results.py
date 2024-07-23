@@ -12,6 +12,7 @@ import shap
 import joblib
 import os
 import base64
+from io import BytesIO
 
 
 # Results
@@ -207,7 +208,7 @@ def load_pred_functions():
     
     # Make Prediction Button
     st.write("""
-    ### Prediction
+    #### Class Prediction
     Our binary classification model aims to predict the response time mode based on various principal components derived from the input features. Click the "Make Prediction" button below to generate predictions for the test dataset, which consists of 307,541 data points retained from training to evaluate model generalization on unseen data.
     """)
 
@@ -254,7 +255,6 @@ def load_pred_functions():
         st.write("Please select a plot type.")
 
     return 
-
 
 
 ### 3 Interpretability
@@ -507,7 +507,7 @@ def generate_force_plot_html(force_plot):
     return force_plot_html
 
 
-### Return interpretability functions for main streamlit file
+### Return interpretability functions to main streamlit file
 
 def load_interpret_functions():
     st.subheader("2. Model Interpretation")
@@ -639,15 +639,118 @@ def load_interpret_functions():
 # 4 Feature Interpretation
 ### 4.1 PC Load Reconstruction
 
+
+# Load the PCA object
+pca_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'pca_object.pkl')
+pca = joblib.load(pca_path)
+
+# Load the column names
+X_columns_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'X_columns.pkl')
+X_columns = joblib.load(X_columns_path)
+
+def calculate_loadings(pca, X_columns):
+    loadings = pca.components_.T  # Transpose to get the correct shape
+    loadings_df = pd.DataFrame(loadings, index=X_columns, columns=[f'PC{i+1}' for i in range(loadings.shape[1])])
+    return loadings_df
+
+# Plot the loadings for a specific PC
+def plot_loadings(loadings_df, pc, top_n=5):
+    pc_loadings = loadings_df[pc].sort_values(ascending=False)
+    pc_loadings_top_bottom = pd.concat([pc_loadings.head(top_n), pc_loadings.tail(top_n)])
+
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="whitegrid")
+    ax = sns.barplot(x=pc_loadings_top_bottom.values, y=pc_loadings_top_bottom.index)
+    ax.set_title(f'Top and Bottom PCA Loadings for {pc}', fontsize=16, color='white')
+    ax.set_xlabel('Loading Value', fontsize=14, color='white')
+    ax.set_ylabel('Original Feature', fontsize=14, color='white')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+    plt.xticks(fontsize=12, color='white')
+    plt.yticks(fontsize=12, color='white')
+    plt.gca().set_facecolor('none')  # Set the background of the plot to be transparent
+
+    buf = BytesIO()
+    plt.savefig(buf, format='png', transparent=True)  # Save plot to the buffer
+    plt.close()
+    buf.seek(0)
+    return buf
+
+
+### 4.2 PC & Feature Correlation Matrix
+
+def plot_loadings_heatmap(loadings_df, top_n_features=10):
+    loadings_df_rounded = loadings_df.round(2)
+
+    # Truncate feature labels to a maximum of 20 characters
+    truncated_index = [feature[:20] for feature in loadings_df_rounded.index]
+    loadings_df_rounded.index = truncated_index
+
+    # Select top features
+    top_features = loadings_df_rounded.abs().nlargest(top_n_features, loadings_df_rounded.columns).index
+
+    # Create a heatmap data frame
+    heatmap_df = loadings_df_rounded.loc[top_features, :]
+
+    plt.figure(figsize=(14, 8))
+    sns.set_theme(style="whitegrid")
+    ax = sns.heatmap(
+        heatmap_df, annot=True, cmap='coolwarm', cbar_kws={'label': 'Loading Value'},
+        annot_kws={"color": "black", "fontsize" : 10}, vmin=-1, vmax=1
+    )
+    ax.set_title(f'Top {top_n_features} Features for PCA Components', fontsize=16, color='white')
+    ax.set_xlabel('')
+    ax.set_ylabel('')
+    plt.xticks(fontsize=10, color='white')
+    plt.yticks(fontsize=12, color='white')
+    plt.gca().set_facecolor('none')  # Set the background of the plot to be transparent
+
+    cbar = ax.collections[0].colorbar
+    cbar.ax.yaxis.label.set_color('white')
+    cbar.ax.tick_params(colors='white')
+
+    buf = BytesIO()
+    plt.savefig(buf, format='png', transparent=True)  # Save plot to the buffer
+    plt.close()
+    buf.seek(0)
+    return buf
+
+
+### Return pc load functions to main streamlit file
+
 def load_pc_load_functions():
     st.subheader("3. Feature Interpretation")
     st.write("""
     Feature Interpretation ....
              """)
 
-    st.write('#### Principal Component Recronstruction')
+    st.write('#### Principal Component Reconstruction')
     st.write("""
-    Principal Component Recronstruction ...
+    Principal Component Reconstruction ...
             """)
 
-### 4.2 PC & Feature Correlation Matrix
+    st.title('PCA Loading Plot')
+    
+    loadings_df = calculate_loadings(pca, X_columns)
+
+    pc = st.selectbox('Select the PC you are interested in:', [f'PC{i+1}' for i in range(loadings_df.shape[1])])
+    top_n = st.number_input('Enter the number of top and bottom features to display:', min_value=1, max_value=50, value=5)
+
+    if st.button('Generate Loading Plot'):
+        buf = plot_loadings(loadings_df, pc, top_n=top_n)
+        st.image(buf, use_column_width=True)
+
+    
+    st.write('#### Principal Component Correlation Matrix')
+    st.write("""
+    In this correlation matrix, the principal components are ...
+            """)
+
+    st.title('PCA Loadings Heatmap')
+
+    top_n_features = st.number_input('Enter the number of top features to display:', min_value=1, max_value=loadings_df.shape[0], value=10)
+
+    if st.button('Generate Loadings Heatmap'):
+        buf = plot_loadings_heatmap(loadings_df, top_n_features=top_n_features)
+        st.image(buf, use_column_width=True)
+
