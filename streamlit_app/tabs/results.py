@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit_shap import st_shap
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -9,10 +11,12 @@ from PIL import Image
 import shap
 import joblib
 import os
+import base64
 
 
 # Results
 
+shap.initjs()  # Initialize SHAP JavaScript library at the beginning of your Streamlit app
 
 ### 1. Evaluation Comparison
 ### 1.1 Evaluation Metric Scores
@@ -265,17 +269,7 @@ def plot_shap_across_models():
         return None
 
 
-### 3.2 Mean Shap Value Calculation & Plot
-
-def get_shap_values(model, X, model_type='tree'):
-    if model_type == 'tree':
-        explainer = shap.TreeExplainer(model)
-    elif model_type == 'linear':
-        explainer = shap.LinearExplainer(model, X)
-    else:
-        explainer = shap.KernelExplainer(model.predict, X)
-    shap_values = explainer.shap_values(X)
-    return shap_values, explainer
+### 3.2 Mean Shap Value Plot
 
 def plot_shap_values(model_name):
     if model_name == 'XGBoost':
@@ -339,97 +333,179 @@ def plot_shap_violins(model_name):
 
 ### 3.4 Local Interpretation for one Observation
 
-# Load SHAP values and explainers once at the start
-shap_values_paths = {
-    'XGBoost': ('..', '..', 'notebooks', 'shap_values_xgb.pkl', 'explainer_xgb.pkl'),
-    'Random Forest': ('..', '..', 'notebooks', 'shap_values_rf.pkl', 'explainer_rf.pkl'),
-    'Logistic Regression': ('..', '..', 'notebooks', 'shap_values_logreg.pkl', 'explainer_logreg.pkl')
-}
+# Define paths to SHAP values and explainers
+xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb.pkl')
+xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb.pkl')
 
+rf_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_rf.pkl')
+rf_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_rf.pkl')
+
+logreg_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_logreg.pkl')
+logreg_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_logreg.pkl')
+
+# Load SHAP values and explainers
 shap_values = {}
 explainers = {}
 
-for model_name, paths in shap_values_paths.items():
-    shap_values_path = os.path.join(os.path.dirname(__file__), *paths[:3])
-    explainer_path = os.path.join(os.path.dirname(__file__), *paths[3:])
-    
-    if os.path.exists(shap_values_path) and os.path.exists(explainer_path):
-        shap_values[model_name] = joblib.load(shap_values_path)
-        explainers[model_name] = joblib.load(explainer_path)
+if os.path.exists(xgb_shap_values_path) and os.path.exists(xgb_explainer_path):
+    shap_values['XGBoost'] = joblib.load(xgb_shap_values_path)
+    explainers['XGBoost'] = joblib.load(xgb_explainer_path)
+    print(f"XGBoost SHAP values loaded successfully. Shape: {shap_values['XGBoost'].shape}")
+
+if os.path.exists(rf_shap_values_path) and os.path.exists(rf_explainer_path):
+    shap_values['Random Forest'] = joblib.load(rf_shap_values_path)
+    explainers['Random Forest'] = joblib.load(rf_explainer_path)
+    print(f"Random Forest SHAP values loaded successfully. Shape: {shap_values['Random Forest'].shape}")
+
+if os.path.exists(logreg_shap_values_path) and os.path.exists(logreg_explainer_path):
+    shap_values['Logistic Regression'] = joblib.load(logreg_shap_values_path)
+    explainers['Logistic Regression'] = joblib.load(logreg_explainer_path)
+    print(f"Logistic Regression SHAP values loaded successfully. Shape: {shap_values['Logistic Regression'].shape}")
 
 def local_interpretation(model_name, X_test_pca, pca_feature_names, index=3):
-    if model_name in shap_values and model_name in explainers:
-        shap_values_model = shap_values[model_name]
-        explainer_model = explainers[model_name]
-        
-        # Round the values to three decimals
-        rounded_shap_values = np.round(shap_values_model[index, :], 3)
-        rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
-        
-        force_plot = shap.force_plot(
-            explainer_model.expected_value, 
-            rounded_shap_values, 
-            rounded_X_test_pca, 
-            feature_names=pca_feature_names, 
-            matplotlib=True
-        )
-        
-        return force_plot
-    
-    elif model_name == 'Combined Voting Classifier':
-        if all(m in shap_values and m in explainers for m in ['XGBoost', 'Random Forest', 'Logistic Regression']):
-            shap_values_combined = (shap_values['XGBoost'] + shap_values['Random Forest'] + shap_values['Logistic Regression']) / 3
-            rounded_shap_values_combined = np.round(shap_values_combined[index, :], 3)
-            rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
-            
-            force_plot_combined = shap.force_plot(
-                explainers['XGBoost'].expected_value, 
-                rounded_shap_values_combined, 
-                rounded_X_test_pca, 
-                feature_names=pca_feature_names, 
-                matplotlib=True
-            )
-            
-            return force_plot_combined
-    
-    return None
+    try:
+        if model_name in shap_values and model_name in explainers:
+            shap_values_model = shap_values[model_name]
+            explainer_model = explainers[model_name]
 
+            # Debug: Print shapes
+            print(f"SHAP values shape for {model_name}: {shap_values_model.shape}")
+            print(f"Explainer expected value shape for {model_name}: {explainer_model.expected_value.shape}")
+
+            # Handle Random Forest separately to specify the class index
+            if model_name == 'Random Forest':
+
+                rounded_shap_values_rf = np.round(shap_values_model, 3)
+                rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
+                
+                force_plot = shap.force_plot(
+                    explainer_model.expected_value[1],
+                    rounded_shap_values_rf[index, :],
+                    rounded_X_test_pca,
+                    feature_names=pca_feature_names
+                )
+                return force_plot
+
+            else:
+                rounded_shap_values = np.round(shap_values_model[index, :], 3)
+                rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
+
+                force_plot = shap.force_plot(
+                    explainer_model.expected_value,
+                    rounded_shap_values,
+                    rounded_X_test_pca,
+                    feature_names=pca_feature_names
+                )
+
+            return force_plot
+
+        elif model_name == 'Combined Voting Classifier':
+            if all(m in shap_values and m in explainers for m in ['XGBoost', 'Random Forest', 'Logistic Regression']):
+                shap_values_combined = (shap_values['XGBoost'] + shap_values['Random Forest'] + shap_values['Logistic Regression']) / 3
+                rounded_shap_values_combined = np.round(shap_values_combined[index, :], 3)
+                rounded_X_test_pca = np.round(X_test_pca.iloc[index, :], 3)
+
+                force_plot_combined = shap.force_plot(
+                    explainers['XGBoost'].expected_value,
+                    rounded_shap_values_combined,
+                    rounded_X_test_pca,
+                    feature_names=pca_feature_names
+                )
+
+                return force_plot_combined
+
+        print(f"SHAP values or explainer not found for {model_name}")
+        return None
+    except Exception as e:
+        print(f"Error in generating SHAP force plot for {model_name} (Observation {index}): {e}")
+        return None
+    
 ### 3.5 Interactive Plot for first 1000 Observations
 
-def interactive_force_plot(model_name, X_test_pca, pca_feature_names, n_observations=1000):
-    if model_name in shap_values and model_name in explainers:
-        shap_values_model = shap_values[model_name]
-        explainer_model = explainers[model_name]
-        
-        # Round the values to three decimals
-        rounded_shap_values = np.round(shap_values_model[:n_observations], 3)
-        rounded_X_test_pca = np.round(X_test_pca.iloc[:n_observations], 3)
-        
-        force_plot = shap.force_plot(
-            explainer_model.expected_value, 
-            rounded_shap_values, 
-            rounded_X_test_pca, 
-            feature_names=pca_feature_names
-        )
-        
-        return force_plot
-    
-    elif model_name == 'Combined Voting Classifier':
-        if all(m in shap_values and m in explainers for m in ['XGBoost', 'Random Forest', 'Logistic Regression']):
-            shap_values_combined = (shap_values['XGBoost'] + shap_values['Random Forest'] + shap_values['Logistic Regression']) / 3
-            rounded_shap_values_combined = np.round(shap_values_combined[:n_observations], 3)
-            rounded_X_test_pca = np.round(X_test_pca.iloc[:n_observations], 3)
-            
-            force_plot_combined = shap.force_plot(
-                explainers['XGBoost'].expected_value, 
-                rounded_shap_values_combined, 
-                rounded_X_test_pca, 
-                feature_names=pca_feature_names
-            )
-            
-            return force_plot_combined
-    
-    return None
+def interactive_force_plot(model_name, X_test_pca, pca_feature_names, start_index=0, num_observations=1000):
+    try:
+        if model_name in shap_values and model_name in explainers:
+            shap_values_model = shap_values[model_name]
+            explainer_model = explainers[model_name]
+
+            end_index = start_index + num_observations
+            X_range = X_test_pca.iloc[start_index:end_index]
+
+            # Handle Random Forest separately without specifying class index
+            if model_name == 'Random Forest':
+                shap_values_range = shap_values_model[start_index:end_index]
+                expected_value = explainer_model.expected_value[1]  # Assuming class index 1 for simplicity
+
+                force_plot = shap.force_plot(
+                    expected_value,
+                    shap_values_range,
+                    X_range,
+                    feature_names=pca_feature_names
+                )
+            else:
+                shap_values_range = shap_values_model[start_index:end_index]
+                expected_value = explainer_model.expected_value
+
+                force_plot = shap.force_plot(
+                    expected_value,
+                    shap_values_range,
+                    X_range,
+                    feature_names=pca_feature_names
+                )
+
+            return force_plot
+
+        elif model_name == 'Combined Voting Classifier':
+            end_index = start_index + num_observations  # Ensure end_index is defined here as well
+            if all(m in shap_values and m in explainers for m in ['XGBoost', 'Random Forest', 'Logistic Regression']):
+                shap_values_combined = (shap_values['XGBoost'] + shap_values['Random Forest'] + shap_values['Logistic Regression']) / 3
+                shap_values_combined_range = shap_values_combined[start_index:end_index]
+                expected_value = explainers['XGBoost'].expected_value
+
+                force_plot_combined = shap.force_plot(
+                    expected_value,
+                    shap_values_combined_range,
+                    X_test_pca.iloc[start_index:end_index],
+                    feature_names=pca_feature_names
+                )
+
+                return force_plot_combined
+
+        print(f"SHAP values or explainer not found for {model_name}")
+        return None
+    except Exception as e:
+        print(f"Error in generating SHAP force plot for {model_name} (Observations {start_index} to {end_index}): {e}")
+        return None
+
+def generate_force_plot_html(force_plot):
+    # Add CSS to change background color to white
+    force_plot_html = f"""
+    <html>
+    <head>
+        {shap.getjs()}
+        <style>
+            .shap-container {{
+                background-color: white !important;
+                padding: 20px;
+                border-radius: 10px;
+            }}
+            .shap-plot {{
+                background-color: white !important;
+            }}
+            .shap-plot > div {{
+                background-color: white !important;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="shap-container">
+            {force_plot.html()}
+        </div>
+    </body>
+    </html>
+    """
+    return force_plot_html
+
 
 ### Return interpretability functions for main streamlit file
 
@@ -500,55 +576,78 @@ def load_interpret_functions():
     # SHAP Local Interpretation
     st.write('#### Local Interpretation of Model Prediction')
     st.write("""
-    The local interpration....
-            """)
-    
-    shap_model_name = st.selectbox(
+    The local interpretation helps in understanding the contribution of each feature for a single prediction.
+    """)
+
+    shap_model_name_local = st.selectbox(
         "Choose a model for local interpretation:",
-        ["Select", "XGBoost", "Random Forest", "Logistic Regression", "Combined Voting Classifier"]
-    )
-    
-    observation_number = st.number_input(
-        f"Enter the observation number (between 0 and {X_test_pca.shape[0]-1}):",
-        min_value=0, 
-        max_value=X_test_pca.shape[0]-1,
-        step=1
+        ["Select", "XGBoost", "Random Forest", "Logistic Regression", "Combined Voting Classifier"],
+        key="local_interpretation"
     )
 
-    # Display the SHAP force plot for the selected model and observation
-    if shap_model_name != "Select":
+    if shap_model_name_local != "Select":
+        observation_number = st.number_input(
+            f"Enter the observation number (between 0 and {X_test_pca.shape[0] - 1}):",
+            min_value=0, 
+            max_value=X_test_pca.shape[0] - 1,
+            step=1
+        )
+
         if st.button('Generate SHAP Force Plot'):
-            force_plot_path = local_interpretation(shap_model_name, X_test_pca, pca_feature_names, index=observation_number)
-            if force_plot_path:
-                st.image(force_plot_path, caption=f"SHAP Force Plot for {shap_model_name} (Observation {observation_number})", use_column_width=True)
+            force_plot = local_interpretation(shap_model_name_local, X_test_pca, pca_feature_names, index=observation_number)
+            if force_plot:
+                force_plot_html = generate_force_plot_html(force_plot)
+                components.html(force_plot_html, height=200)
             else:
                 st.write("SHAP force plot not found or error in generating the plot.")
 
-    # Display the interactive SHAP force plot for the selected model and number of observations
-    st.write('#### Interactive SHAP Plot')
+    # Interactive SHAP Force Plot for a range of observations
+    st.write('#### Interactive SHAP Force Plot for a Range of Observations')
     st.write("""
-    In addition to only plotting the SHAP values for one observation, we can also display the marginal contribution of features to our model's prediction over a pre-defined range of observations (e.g., 1000 data points). ....
-            """)
-    
-    # Input for the number of observations
-    n_observations = st.number_input(
-        "Enter the number of observations (e.g., 1000):",
-        min_value=1, 
-        max_value=X_test_pca.shape[0]-1,
-        value=1000, 
-        step=1
+    The interactive SHAP force plot helps in understanding the contribution of features over a range of observations.
+    """)
+
+    shap_model_name_interactive = st.selectbox(
+        "Choose a model for interactive SHAP force plot:",
+        ["Select", "XGBoost", "Random Forest", "Logistic Regression", "Combined Voting Classifier"],
+        key="interactive_plot"
     )
 
-    if shap_model_name != "Select":
+    if shap_model_name_interactive != "Select":
+        num_observations = st.number_input(
+            "Enter the number of observations to visualize (e.g., 1000):",
+            min_value=1, 
+            max_value=X_test_pca.shape[0], 
+            value=1000
+        )
+
+        start_index = st.slider(
+            f"Select the start index for the range (0 to {X_test_pca.shape[0] - num_observations}):",
+            min_value=0,
+            max_value=X_test_pca.shape[0] - num_observations,
+            step=1
+        )
+
         if st.button('Generate Interactive SHAP Force Plot'):
-            force_plot = interactive_force_plot(shap_model_name, X_test_pca, pca_feature_names, n_observations=n_observations)
+            force_plot = interactive_force_plot(shap_model_name_interactive, X_test_pca, pca_feature_names, start_index=start_index, num_observations=num_observations)
             if force_plot:
-                st_shap(force_plot)
+                force_plot_html = generate_force_plot_html(force_plot)
+                components.html(force_plot_html, height=420)
             else:
                 st.write("SHAP force plot not found or error in generating the plot.")
-
 
 # 4 Feature Interpretation
 ### 4.1 PC Load Reconstruction
+
+def load_pc_load_functions():
+    st.subheader("3. Feature Interpretation")
+    st.write("""
+    Feature Interpretation ....
+             """)
+
+    st.write('#### Principal Component Recronstruction')
+    st.write("""
+    Principal Component Recronstruction ...
+            """)
 
 ### 4.2 PC & Feature Correlation Matrix

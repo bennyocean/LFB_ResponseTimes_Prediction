@@ -6,8 +6,10 @@ import numpy as np
 import os
 import sys
 from pathlib import Path
-import tabs.eda as eda
-import tabs.results as results
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
+import eda
+import results
 
 # Streamlit UI
 st.sidebar.title("Table of Contents")
@@ -43,12 +45,11 @@ if page == pages[2]:
 # Prediction
 if page == pages[3]:
     st.title("Prediction & Interpretation")
-
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
-    
+   
     results.load_eval_functions()
     results.load_pred_functions()
     results.load_interpret_functions()
+    results.load_pc_load_functions()
     
 
 # Conclusion
