@@ -42,16 +42,17 @@ def comp_table():
     comp = pd.DataFrame(data)
     comp.set_index('Model', inplace=True)
     st.write("Evaluation Comparison of Final Model Scores")
-    st.write('Some description..')
+    st.write("""
+            The following table summarizes the performance metrics of the final models used in predicting the response time classes. Metrics such as Precision, Recall, F1-Score, ROC AUC, Accuracy, and Balanced Accuracy are included to provide a comprehensive evaluation of each model's effectiveness.
+            """)
     st.dataframe(comp)
-
-def display_metrics_plot():
-    st.write('Some description..')
+    st.write("""
+            We can observe that the XGBoost and Stacking Classifier models perform similarly well across most metrics, with slight variations. The Random Forest model also demonstrates strong performance, while the Voting Classifiers (both Soft and Hard) show comparable, albeit slightly lower, scores.
+            """)
     
-    # Define the relative path where the images are stored
+def display_metrics_plot(): 
     image_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_evaluation_comparison')
 
-    # Dictionary to map score metrics to their respective image filenames
     score_metrics = {
         "Precision": "precision.png",
         "Recall": "recall.png",
@@ -74,8 +75,13 @@ def display_metrics_plot():
 ### 1.2 Recall Evaluation (focus on minority class)
 
 def plot_recall_comp():
-    st.write('Some explanation. Focus on Recall of minority class, i.e., target of 6 minutes not reached. Total test size: 307541. Majority class ~ 217298, minority class 90243. 2Goal to reduce false negatives and thus increase recall of minority class.')
-
+    st.write("""
+            As pointed out above, we focus on the recall of the minority class, specifically the class where the response time goal of 6 minutes is not reached.
+            """)
+    st.write("""
+             For the LFB, it is crucial to minimize false negatives, as these represent instances where a delayed response is not correctly identified. Reducing false negatives ensures that high-risk situations are accurately flagged, enabling the LFB to allocate resources more effectively and potentially save lives. Thus, we aim to reduce false negatives and thereby increase the recall of the minority class.
+            """)
+    
     recall_comp = {
         'Model': [
             'Random Forest', 
@@ -89,11 +95,8 @@ def plot_recall_comp():
     }
 
     recall_comp = pd.DataFrame(recall_comp)
-
-    # Find the model with the highest Recall (Not Reached (>6 min))
     best_model = 'Voting Classifier (Hard)'
 
-    # Create the plot
     fig, ax = plt.subplots(figsize=(10, 6))
 
     bar_width = 0.35
@@ -120,15 +123,32 @@ def plot_recall_comp():
 
     # Adjust y-axis limits
     ax.set_ylim(0.55, 0.8)
-    
+
+    # Set styles
+    ax.title.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+    ax.legend(frameon=False)
+
+    # Set background to transparent
+    fig.patch.set_alpha(0.0)
+    ax.patch.set_alpha(0.0)
+
+    # Remove grid lines
+    ax.grid(False)
+
     plt.xticks(rotation=45, ha='right')
+    plt.setp(ax.get_legend().get_texts(), color='white')
 
     plt.tight_layout()
     save_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'bs_evaluation_comparison', 'recall_comparison.png')
     plt.savefig(save_path)
     st.pyplot(fig)
 
-    st.write('Some Conclusion..')
+    st.write("""
+            From the recall comparison plot, we can see that the Voting Classifier (Hard) has the highest recall for the minority class, indicating the best performance in identifying instances where the response time goal is not met. Based on the overall model evaluation and the need to balance performance across classes, we will use the Voting Classifier (Hard) as our final model to make predictions.
+            """)
 
 ### Return functions for main streamlit file
 
@@ -166,28 +186,110 @@ def prediction():
 
 ### 2.2 Prediction Plots
 
-def plot_pred_dist(y_pred):
-    fig, ax = plt.subplots()
-    ax.hist(y_pred, bins=[0, 1, 2], align='left', rwidth=0.8)
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(['Goal not Reached (>6 min)', ' Goal reached (<=6 min)'])
-    ax.set_xlabel('Predicted Class')
-    ax.set_ylabel('Frequency')
-    ax.set_title('Distribution of Predictions')
-    return fig
-
 def plot_confusion_matrix(y_true, y_pred):
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     fig, ax = plt.subplots()
-    disp.plot(ax=ax)
+    disp.plot(ax=ax, cmap='Set2', colorbar=False)  # Disable the colorbar
+
+    # Set edge color to white
+    for spine in ax.spines.values():
+        spine.set_edgecolor('none')
+
+    ax.grid(False)
+
+    # Manually add white lines around the squares
+    for i in range(cm.shape[0] + 1):
+        ax.axhline(i - 0.5, color='white', linewidth=2)
+        ax.axvline(i - 0.5, color='white', linewidth=2)
+
+    # Set background to transparent
+    fig.patch.set_alpha(0.0)
+    ax.patch.set_alpha(0.0)
+
+    # Set text color to white
+    ax.title.set_color('white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+
+    # Set the color of text in the cells to white
+    for text in disp.text_.ravel():
+        text.set_color('white')
+
+    return fig
+
+def plot_pred_dist(y_pred):
+    fig, ax = plt.subplots()
+
+    # Define colors using seaborn
+    colors = sns.color_palette("Set2", 2)
+
+    # Plot histogram
+    counts, bins, patches = ax.hist(y_pred, bins=[-0.5, 0.5, 1.5], align='mid', rwidth=0.8)
+
+    # Set colors for the histogram bars
+    for patch, color in zip(patches, colors):
+        patch.set_facecolor(color)
+
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(['Goal not Reached (>6 min)', 'Goal reached (<=6 min)'])
+    ax.set_xlabel('Predicted Class')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Distribution of Predictions')
+
+    # Set background to transparent
+    fig.patch.set_alpha(0.0)
+    ax.patch.set_alpha(0.0)
+
+    # Set text color to white
+    ax.title.set_color('white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+
+    # Remove grid lines
+    ax.grid(False)
+
     return fig
 
 def plot_pca_components(X_test_pca, pc_x, pc_y):
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.scatterplot(data=X_test_pca, x=pc_x, y=pc_y, hue='Prediction', palette='Set1', ax=ax)
+    hue_labels = {0: 'Class 0', 1: 'Class 1'}
+    
+    scatter = sns.scatterplot(data=X_test_pca, x=pc_x, y=pc_y, hue='Prediction', palette='Set2', ax=ax)
+
+    # Set styles
     ax.set_title(f'PCA Component Plot: {pc_x} vs {pc_y}')
+    ax.title.set_color('white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+
+    # Set background to transparent
+    fig.patch.set_alpha(0.0)
+    ax.patch.set_alpha(0.0)
+
+    # Remove grid lines
+    ax.grid(False)
+
+    # Manually set the legend to ensure correct labels
+    handles, _ = scatter.get_legend_handles_labels()
+    ax.legend(handles=handles, labels=['Class 0', 'Class 1'], title_fontsize='13', fontsize='11', loc='upper right')
+    
+    # Set legend styles
+    legend = ax.get_legend()
+    legend.get_frame().set_alpha(0)  # Set legend background to transparent
+    plt.setp(legend.get_texts(), color='white')  # Set legend font color to white
+    plt.setp(legend.get_title(), color='white')  # Set legend title color to white
+
     return fig
+
+
+
 
 # Make Prediction
 y_pred, pca_feature_names, X_test_pca = prediction()
@@ -204,13 +306,15 @@ X_test_pca_df['Prediction'] = y_pred
 
 def load_pred_functions():
     st.subheader("1. Prediction")
-    st.write('Some introduction..')
+    st.write("""
+             In this section, we use our Voting Classifier (Hard) model to predict the response time classes. The model is evaluated on a test dataset of 307,541 data points to assess its generalization on unseen data.
+             """)
     
     # Make Prediction Button
     st.write("""
-    #### Class Prediction
-    Our binary classification model aims to predict the response time mode based on various principal components derived from the input features. Click the "Make Prediction" button below to generate predictions for the test dataset, which consists of 307,541 data points retained from training to evaluate model generalization on unseen data.
-    """)
+            #### Class Prediction
+            Our binary classification model aims to predict the response time classes based on various principal components derived from the input features and random undersampling techniques to balance the classes. Click the "Make Prediction" button below to generate predictions for the test dataset.
+            """)
 
     if st.button('Make Prediction'):
         st.write("Prediction:")
@@ -218,16 +322,20 @@ def load_pred_functions():
 
         # Interpretation of the Prediction DataFrame
         st.write("""
-        The table above shows the principal components used for the prediction and the corresponding predicted response time mode (0 or 1). The 'Prediction' column indicates whether the response time is classified as not reached the target of 6 minutes (i.e., class 0) or reached the 6 minute goal (i.e., class 1) by the model. These predictions are made on the test set to assess how well the model generalizes to new, unseen data.
-        """)
+                The table above shows the principal components used for prediction and the corresponding predicted response time mode (0 or 1). The 'Prediction' column indicates whether the response time is classified as not reaching the target of 6 minutes (class 0) or reaching the 6-minute goal (class 1). These predictions are made on the test set to assess how well the model generalizes to new, unseen data.
+                """)
 
     # Prediction Plot Dropdown
-    st.markdown("""
-    #### Prediction Evaluation:
-    - **Confusion Matrix**: Visualizes the performance of the classification model by showing the number of correct and incorrect predictions for each class, helping to identify how well the model distinguishes between different classes.
-    - **Distribution of Predictions**: Displays the frequency of predicted classes, providing insight into the overall prediction distribution and helping to identify any class imbalance in the model's predictions.
-    - **PCA Component Plot**: The PCA component plot provides a visual indication whether the model is effectively using the principal components to distinguish between the two classes.
-                """)
+    st.write("""
+            #### Prediction Evaluation
+            """)
+        
+    st.write("""
+            We evaluate the performance of our model using various visualization techniques to understand its effectiveness and potential areas for improvement:
+            - **Confusion Matrix**: Visualizes the performance of the classification model by showing the number of correct and incorrect predictions for each class, helping to identify how well the model distinguishes between different classes.
+            - **Distribution of Predictions**: Displays the frequency of predicted classes, providing insight into the overall prediction distribution and helping to identify any class imbalance in the model's predictions.
+            - **PCA Component Plot**: The PCA component plot provides a visual indication whether the model is effectively using the principal components to distinguish between the two classes.
+            """)
     
     plot_type = st.selectbox(
         "Choose a plot to display:",
@@ -238,26 +346,58 @@ def load_pred_functions():
         fig = plot_confusion_matrix(y_true, y_pred)
         st.pyplot(fig)
         st.write("""
-        The confusion matrix shows that the model correctly predicted 155,420 instances of 'Reached (<=6 min)' but misclassified 61,878 instances of 'Reached (<=6 min)' as 'Not Reached (>6 min)', representing a considerable number of false negatives.
-        """)
+                The confusion matrix shows that the model correctly predicted 155,420 instances of 'Reached (<=6 min)' but misclassified 61,878 instances of 'Reached (<=6 min)' as 'Not Reached (>6 min)', representing a considerable number of false negatives.
+                """)
+        
     elif plot_type == "Prediction Distribution":
         fig = plot_pred_dist(y_pred)
         st.pyplot(fig)
         st.write("""
-        The distribution plot indicates that the model predicts more instances of 'Goal Reached (<=6 min)' compared to 'Goal not Reached (>6 min)', providing insight into the model's tendency and potential class imbalance in the predictions.
-        """)
+                The distr
+                ibution plot indicates that the model predicts more instances of 'Goal Reached (<=6 min)' compared to 'Goal not Reached (>6 min)', providing insight into the model's tendency and potential class imbalance in the predictions.
+                """)
+        
     elif plot_type == "PCA Component Plot":
         pc_x = st.selectbox("Select X-axis PC", pca_feature_names, index=0)
         pc_y = st.selectbox("Select Y-axis PC", pca_feature_names, index=1)
         fig = plot_pca_components(X_test_pca_df, pc_x, pc_y)
         st.pyplot(fig)
-    else:
-        st.write("Please select a plot type.")
 
     return 
 
 
 ### 3 Interpretability
+
+# Define paths to SHAP values and explainers
+xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb.pkl')
+xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb.pkl')
+
+rf_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_rf.pkl')
+rf_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_rf.pkl')
+
+logreg_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_logreg.pkl')
+logreg_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_logreg.pkl')
+
+# Load SHAP values and explainers
+shap_values = {}
+explainers = {}
+
+if os.path.exists(xgb_shap_values_path) and os.path.exists(xgb_explainer_path):
+    shap_values['XGBoost'] = joblib.load(xgb_shap_values_path)
+    explainers['XGBoost'] = joblib.load(xgb_explainer_path)
+    print(f"XGBoost SHAP values loaded successfully. Shape: {shap_values['XGBoost'].shape}")
+
+if os.path.exists(rf_shap_values_path) and os.path.exists(rf_explainer_path):
+    shap_values['Random Forest'] = joblib.load(rf_shap_values_path)
+    explainers['Random Forest'] = joblib.load(rf_explainer_path)
+    print(f"Random Forest SHAP values loaded successfully. Shape: {shap_values['Random Forest'].shape}")
+
+if os.path.exists(logreg_shap_values_path) and os.path.exists(logreg_explainer_path):
+    shap_values['Logistic Regression'] = joblib.load(logreg_shap_values_path)
+    explainers['Logistic Regression'] = joblib.load(logreg_explainer_path)
+    print(f"Logistic Regression SHAP values loaded successfully. Shape: {shap_values['Logistic Regression'].shape}")
+
+
 ### 3.1 Mean Shap Value Comparison in the Voting Classifier
 
 def plot_shap_across_models():
@@ -267,7 +407,6 @@ def plot_shap_across_models():
         return default_plot_image
     else:
         return None
-
 
 ### 3.2 Mean Shap Value Plot
 
@@ -332,35 +471,6 @@ def plot_shap_violins(model_name):
         return None
 
 ### 3.4 Local Interpretation for one Observation
-
-# Define paths to SHAP values and explainers
-xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb.pkl')
-xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb.pkl')
-
-rf_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_rf.pkl')
-rf_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_rf.pkl')
-
-logreg_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_logreg.pkl')
-logreg_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_logreg.pkl')
-
-# Load SHAP values and explainers
-shap_values = {}
-explainers = {}
-
-if os.path.exists(xgb_shap_values_path) and os.path.exists(xgb_explainer_path):
-    shap_values['XGBoost'] = joblib.load(xgb_shap_values_path)
-    explainers['XGBoost'] = joblib.load(xgb_explainer_path)
-    print(f"XGBoost SHAP values loaded successfully. Shape: {shap_values['XGBoost'].shape}")
-
-if os.path.exists(rf_shap_values_path) and os.path.exists(rf_explainer_path):
-    shap_values['Random Forest'] = joblib.load(rf_shap_values_path)
-    explainers['Random Forest'] = joblib.load(rf_explainer_path)
-    print(f"Random Forest SHAP values loaded successfully. Shape: {shap_values['Random Forest'].shape}")
-
-if os.path.exists(logreg_shap_values_path) and os.path.exists(logreg_explainer_path):
-    shap_values['Logistic Regression'] = joblib.load(logreg_shap_values_path)
-    explainers['Logistic Regression'] = joblib.load(logreg_explainer_path)
-    print(f"Logistic Regression SHAP values loaded successfully. Shape: {shap_values['Logistic Regression'].shape}")
 
 def local_interpretation(model_name, X_test_pca, pca_feature_names, index=3):
     try:
@@ -527,11 +637,13 @@ def load_interpret_functions():
         st.image(mean_abs_shap_comparison, caption="Mean absolute SHAP values accros each model in the voting classifier", use_column_width=True)
     else:
         st.write("Default plot image not found.")
-    st.write('Some interpretation..')
-
-    # SHAP Summary Plots
     st.write("""
-    The SHAP summary plot explains the contribution of each principal component to the model's predictions. Higher SHAP values indicate greater importance in predicting whether the response time goal is reached. This helps us understand which features most influence the model's decision-making process in our classification problem.
+            The mean absolute SHAP values plot shows that PC6 and PC3 are the most influential features across the voting classifier models, with XGBoost and Logistic Regression assigning high importance to these features. This highlights the significant impact of these principal components in predicting the response variable across different models.
+            """)
+    # SHAP Summary Plots
+    st.write('#### SHAP Summary Plots')
+    st.write("""
+            The SHAP summary plot explains the contribution of each principal component to the model's predictions. Higher SHAP values indicate greater importance in predicting whether the response time goal is reached. This helps us understand which features most influence the model's decision-making process in our classification problem.
             """)
     shap_model_name = st.selectbox(
         "Choose a model to display SHAP values:",
@@ -546,9 +658,9 @@ def load_interpret_functions():
             st.write("SHAP summary plot not found.")
     
     # SHAP Violin Plots
-    st.write('#### Violin Plots of SHAP Values')
+    st.write('#### SHAP Violin Plots')
     st.write("""
-    The SHAP violin plot explains the distribution and impact of the principal components on the model's predictions. Each violin represents the distribution of SHAP values for a feature, indicating both the magnitude and the direction (positive or negative) of the feature's influence on the prediction. This visualization helps in understanding which features are most important in determining the response time mode.
+            The SHAP violin plot explains the distribution and impact of the principal components on the model's predictions. Each violin represents the distribution of SHAP values for a feature, indicating both the magnitude and the direction (positive or negative) of the feature's influence on the prediction. This visualization helps in understanding which features are most important in determining the response time mode.
              """)
     
     # Display violin plot of voting classifier
@@ -559,8 +671,14 @@ def load_interpret_functions():
     else:
         st.write("Default plot image not found.")
     
-    st.write('Some interpretation..')
+    st.write("""
+             The violin plot of SHAP values for the Voting Classifier model shows that PC6 has the highest impact on model output, indicating it is the most influential feature. The wider the distribution, the greater the variation in the feature's impact, with high SHAP values denoting significant contributions to the prediction.
+             """)
 
+    st.write("""
+            To gain more insights, the next plot displays the highest SHAP values and their variation on the feature importance for the individual models of the Voting Classifier.
+             """)
+    
     shap_model_name = st.selectbox(
         "Choose a model to display SHAP violin plot:",
         ["Select", "XGBoost", "Random Forest", "Logistic Regression"]
@@ -574,10 +692,10 @@ def load_interpret_functions():
             st.write("SHAP violin plot not found.")
 
     # SHAP Local Interpretation
-    st.write('#### Local Interpretation of Model Prediction')
+    st.write('#### Local Interpretation')
     st.write("""
-    The local interpretation helps in understanding the contribution of each feature for a single prediction.
-    """)
+            The local interpretation helps in understanding the contribution of each feature for a model's single prediction.
+            """)
 
     shap_model_name_local = st.selectbox(
         "Choose a model for local interpretation:",
@@ -602,10 +720,9 @@ def load_interpret_functions():
                 st.write("SHAP force plot not found or error in generating the plot.")
 
     # Interactive SHAP Force Plot for a range of observations
-    st.write('#### Interactive SHAP Force Plot for a Range of Observations')
     st.write("""
-    The interactive SHAP force plot helps in understanding the contribution of features over a range of observations.
-    """)
+            The next graph displays an interactive SHAP plot that helps in understanding the contribution of features over a range of observations.
+            """)
 
     shap_model_name_interactive = st.selectbox(
         "Choose a model for interactive SHAP force plot:",
@@ -721,15 +838,13 @@ def plot_loadings_heatmap(loadings_df, top_n_features=10):
 def load_pc_load_functions():
     st.subheader("3. Feature Interpretation")
     st.write("""
-    Feature Interpretation ....
+    Feature interpretation using PCA loadings is crucial for understanding how original features contribute to the principal components. By examining the loadings, we can identify the most influential features that drive the variance captured by each PC. This analysis provides valuable insights into the underlying structure of the data, enabling more informed decisions and interpretations.
              """)
 
-    st.write('#### Principal Component Reconstruction')
+    st.write('#### Principal Component Loading')
     st.write("""
-    Principal Component Reconstruction ...
+    The PCA Loading Plot shows how each original feature contributes to a selected principal component. Each bar represents a loading value, indicating the influence of a feature on the chosen PC.
             """)
-
-    st.title('PCA Loading Plot')
     
     loadings_df = calculate_loadings(pca, X_columns)
 
@@ -740,17 +855,22 @@ def load_pc_load_functions():
         buf = plot_loadings(loadings_df, pc, top_n=top_n)
         st.image(buf, use_column_width=True)
 
+        st.write("""
+        The PCA Loading Plot helps us identify key features driving the variance in the selected principal component. Features with high positive or negative loadings are the most influential in shaping the patterns captured by the PC, providing insights into the data's underlying structure.
+            """)
     
     st.write('#### Principal Component Correlation Matrix')
     st.write("""
-    In this correlation matrix, the principal components are ...
-            """)
-
-    st.title('PCA Loadings Heatmap')
+    The PCA Loadings Heatmap visually represents the relationship between the original features and the principal components. Each cell shows the loading value, indicating the contribution of a feature to a specific principal component.
+             """)
 
     top_n_features = st.number_input('Enter the number of top features to display:', min_value=1, max_value=loadings_df.shape[0], value=10)
 
     if st.button('Generate Loadings Heatmap'):
         buf = plot_loadings_heatmap(loadings_df, top_n_features=top_n_features)
         st.image(buf, use_column_width=True)
+    
+        st.write("""
+        From the heatmap, we can identify which features most significantly impact each principal component.  Higher absolute values (positive or negative) indicate features with a strong influence, helping us understand the key factors that shape the data's structure.
+            """)
 
