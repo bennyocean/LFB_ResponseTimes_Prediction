@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
-from tabs.eda import eda
+from tabs import eda
 import results
 
 # Streamlit UI
