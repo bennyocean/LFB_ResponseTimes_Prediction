@@ -8,27 +8,57 @@ from PIL import Image
 from pathlib import Path
 import os
 
-image_path = os.path.join(os.path.dirname(__file__), '..', '..', 'img')
+image_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'eda')
 data_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 
 def show_data_exploration():
     st.title("Exploratory Data Analysis")
     show_data_sets()
+    target_variable()
     show_feature_engineering()
+    show_data_visualization()
     show_preprocessing_steps()
     show_final_dataset()
-    show_data_visualization()
+
+def show_data_visualization():
+    st.title('Statistical Analysis')
+    st.write('We conducted several statistical analyses to evaluate the relevance of our data concerning the target variable.')
+    
+    images = {
+        'Hour of the day': {
+            'file_name': 'total_response_time_by_hour.png',
+            'caption': 'Hour Impact on the Response Time',
+            'description': 'The influence of the hour of the day on the response time of incidents.'
+        },
+        'Incident Categories': {
+            'file_name': 'total_response_time_by_incident_group.png',
+            'caption': 'Incident Categories Impact on Response Time',
+            'description': 'The impact of various incident categories on response time. False Alarms are deliberately excluded.'
+        },
+        'Bank Holidays': {
+            'file_name': 'bank_holidays_impact.png',
+            'caption': 'Bank Holidays Impact on Response Time',
+            'description': 'The notable impact of bank holidays on incident response times.'
+        }
+    }
+    
+    selected_image = st.selectbox('Select an analysis to view', list(images.keys()))
+    
+    if selected_image:
+        image_info = images[selected_image]
+        show_image(image_info['file_name'], image_info['caption'], image_info['description'])
 
 def show_data_sets():
-    st.markdown("""
-    ### Data Sets
+    st.write("### Data Sets")
+    st.write("""
     The exploratory data analysis (EDA) for this project involves four primary datasets, each serving a unique purpose:
 
-    1. **LFB Incident Dataset**: This dataset encompasses incidents handled by the London Fire Brigade (LFB) since January 2009. It consists of 39 columns and 716,551 rows, providing a comprehensive record of incident details.
-    2. **LFB Mobilisation Dataset**: This dataset details the fire engines dispatched to various incidents, comprising 22 columns and 2,373,348 rows. It offers valuable insights into the operational aspects of the LFB's response activities.
-    3. **Google Maps**: This dataset provides the locations of fire stations across London. It is essential for spatial analysis and understanding the geographic distribution of fire stations.
-    4. **Bank Holidays Dataset**: This dataset includes all bank holidays in London. It is useful for examining the impact of holidays on incident response times and patterns.
+    1. **LFB Incident Dataset**: Encompasses incidents handled by the London Fire Brigade (LFB) since January 2009, with 39 columns and 716,551 rows.
+    2. **LFB Mobilisation Dataset**: Details the fire engines dispatched to incidents, with 22 columns and 2,373,348 rows, providing insights into LFB's response activities.
+    3. **Google Maps**: Provides the locations of fire stations across London, essential for spatial analysis.
+    4. **Bank Holidays Dataset**: Includes all bank holidays in London, useful for examining the impact on incident response times and patterns.
     """)
+    
     st.write('Incidents Dataset')
     incidents = pd.read_csv(os.path.join(data_path, 'incidents_prev.csv'))
     incidents['IncidentNumber'] = np.round(incidents['IncidentNumber'])
@@ -43,65 +73,57 @@ def show_data_sets():
         st.write("Mobilisation")
         st.write(mob.head(10))
 
-def show_feature_engineering():
-    st.markdown("""
-    ### Feature Engineering
-    Feature engineering is a crucial step in transforming raw data into meaningful features that enhance the predictive power of our models. In this analysis, several features were engineered:
+def target_variable():
+    st.write("### Setting the Target Variable")
+    st.write("""
+    The target variable for this analysis is the total response time of the first pump arriving at the incident location, derived from the variable AttendanceTimeSeconds in the mobilisation dataset. We renamed it TotalResponseTime.
+    """)
+    show_image('mean_total_response_time_by_year.png', 'Average Total Response Time Over the Years', 
+               'This graph illustrates the changes in average response time over the years.')
+    show_image('total_response_time_distribution.png', 'Total Response Time Distribution', 
+               'Distribution of total response times before logarithmic transformation to understand data spread.')
 
-    1. **From Maps Data**: Calculated the distance of each incident to the nearest fire station. This spatial feature helps in understanding the influence of proximity on response times.
-    2. **From Geo Data**: Mapped London into a cell grid, enabling a granular analysis of incidents based on geographic regions.
-    3. **From Bank Holidays**: Created a boolean feature indicating whether an incident occurred on a bank holiday, allowing us to investigate the effect of holidays on incident frequency and response.
-    4. **From Date Column**: Extracted various temporal features such as whether the incident occurred on a weekend, the time of day, and the day of the week. These features help capture temporal patterns in incident occurrences.
+def show_feature_engineering():
+    st.write("### Feature Engineering")
+    st.write("""
+    Feature engineering is essential for transforming raw data into meaningful features that enhance model predictive power. In this analysis, several features were engineered:
+
+    1. **From Maps Data**: Calculated the distance of each incident to the nearest fire station, aiding in understanding proximity's influence on response times.
+    2. **From Geo Data**: Mapped London into a cell grid for granular analysis based on geographic regions.
+    3. **From Bank Holidays**: Created a boolean feature indicating incidents occurring on bank holidays, investigating the effect on incident frequency and response.
+    4. **From Date Column**: Extracted temporal features such as weekend occurrence, time of day, and day of the week, capturing temporal patterns in incidents.
     """)
     
-    show_image('mean_total_response_time_heatmap_beforebinary.png', 'Mean Total Response Time per grid cell', 'This heatmap shows the mean of the total response times per grid cell')
+    show_image('mean_total_response_time_heatmap_beforebinary.png', 'Mean Total Response Time per Grid Cell', 'This heatmap shows the mean total response times per grid cell.')
 
 def show_preprocessing_steps():
-    st.markdown("""
-    ### Setting the Target Variable
-    The target variable for this analysis is the total response time of the First pump arriving at the location of the inciden. We use the variable AttendanceTimeSeconds
-    from the mobilisation dataset. We renamed it TotalResponseTime.
+    st.write("### Removing Irrelevant Data")
+    st.write("""
+    To streamline analysis and enhance model performance, irrelevant data was removed:
 
-    ### Removing Irrelevant Data
-    To streamline the analysis and enhance model performance, irrelevant data was removed:
-
-    1. We focus solely on the first pump arriving at the incident, as subsequent arrivals might introduce noise.
-    2. Removed several columns not relevant to the target variable, ensuring a leaner and more relevant dataset.
+    1. Focused solely on the first pump arriving at the incident to avoid noise from subsequent arrivals.
+    2. Removed irrelevant columns to the target variable for a cleaner dataset.
     3. Eliminated rows with missing values (NaNs) to maintain data integrity.
 
     ### Preparing Data for Modeling
-    Several preprocessing steps were undertaken to prepare the data for modeling:
+    Preprocessing steps for modeling:
 
-    1. **One-Hot-Encoding**: We mainly used one-hot-encoding to prepare the mostly categorical features for the modeling part
-    2. **Cyclic Encoding**: Applied cyclic encoding to time-related features such as hours of the day and days of the week to ensure that the model correctly interprets these cyclical patterns.
-    3. **Logarithmic Transformation**: Transformed the numeric feature 'DistanceToStation' and the numeric target variable 'TotalResponseTime' into their logarithmic forms to achieve a more normal distribution, which is beneficial for many machine learning algorithms.
+    1. **One-Hot-Encoding**: Applied to prepare categorical features for modeling.
+    2. **Cyclic Encoding**: Used for time-related features to correctly interpret cyclical patterns.
+    3. **Logarithmic Transformation**: Applied to 'DistanceToStation' and 'TotalResponseTime' for a more normal distribution, beneficial for many machine learning algorithms.
 
-    These steps collectively enhance the quality and relevance of the data, setting a solid foundation for subsequent modeling and analysis.
+    These steps collectively enhance data quality and relevance, establishing a solid foundation for modeling and analysis.
     """)
 
 def show_final_dataset():
-    st.markdown("### Final Dataset")
+    st.write("### Final Dataset")
     df_final_prev = pd.read_csv(os.path.join(data_path, 'df_prev.csv'))
     st.write(df_final_prev)
-
-def show_data_visualization():
-    st.title('Data Visualization')
     
-    show_image('mean_total_response_time_by_year.png', 'Average Total Response Time Over the Years', 
-               'This graph shows how the average response time has changed over the years.')
-    show_image('total_response_time_distribution.png', 'Total Response Time Distribution', 
-               'Distribution of total response times before applying logarithm to understand the spread of data.')
-    show_image('incident_types_count.png', 'Incidents Types', 
-               'Distribution of the two incident types after removing false alarm from the set')
-    show_image('property_categories_count.png', 'Property Categories', 
-               'Different categories of properties where incidents occurred.')
-    show_image('bank_holidays_impact.png', 'Bank Holidays Impact', 
-               'Impact of bank holidays on the number and response time of incidents.')
-
 def show_image(file_name, caption, description):
     image = Image.open(os.path.join(image_path, file_name))
     st.image(image, caption=caption, use_column_width=True)
-    st.markdown(description)
+    st.write(description)
 
 if __name__ == "__main__":
     show_data_exploration()
