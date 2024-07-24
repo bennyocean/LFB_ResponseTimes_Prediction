@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
 from tabs import eda
 import results
+import conclusion
 
 # Streamlit UI
 st.sidebar.title("Table of Contents")
@@ -46,7 +47,7 @@ if page == pages[2]:
 if page == pages[3]:
     st.title("Prediction & Interpretation")
    
-    results.load_eval_functions()
+    #results.load_eval_functions()
     results.load_pred_functions()
     results.load_interpret_functions()
     results.load_pc_load_functions()
@@ -56,15 +57,34 @@ if page == pages[3]:
 if page == pages[4]:
     st.title("Conclusion")
 
+    conclusion.conclusion_text()
 
 # About
 if page == pages[5]:
-    st.write("### About")
-    st.markdown("""
-                - Team
-                - Course context
-                - References
-                """)
+    st.title("About")
+    
+    st.write("""
+            The project **Classification of London Fire Brigade Response Times** is a capstone project from the Data Scientist bootcamp at [DataScientest.com](https://datascientest.com), in cooperation with [Panthéon-Sorbonne University](https://www.pantheonsorbonne.fr/).
+            """)
+
+    st.write("### Project Members:")
+    st.write("""
+            - **Ismarah MAIER** [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue)](https://www.linkedin.com/in/ismarah-maier-18496613b/)
+            - **Clemens PAULSEN** [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue)](https://www.linkedin.com/in/benjaminschellinger/)
+            - **Dr. Benjamin SCHELLINGER** [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue)](https://www.linkedin.com/in/clemens-paulsen-a65a5a155/)
+            """)
+
+    st.write("### Project Mentor:")
+    st.write("""
+    - **Yazid MSAADI** (DataScientest) [![Email](https://img.shields.io/badge/Email-red)](mailto:yazid.m@datascientest.com)
+    """)
+
+    st.write("### Github:")
+    st.write("[LFB project](https://github.com/DataScientest-Studio/MAY24_BDS_INT_Fire_Brigade.git)")
+
+    st.write("### References:")
+    st.write("[tbd](https://asrs.arc.nasa.gov/)")
+
 
     
   

@@ -313,7 +313,11 @@ def load_pred_functions():
     # Make Prediction Button
     st.write("""
             #### Class Prediction
-            Our binary classification model aims to predict the response time classes based on various principal components derived from the input features and random undersampling techniques to balance the classes. Click the "Make Prediction" button below to generate predictions for the test dataset.
+            Our binary classification model aims to predict the response time classes based on various principal components derived from the input features and random undersampling techniques to balance the classes.
+            """)
+    
+    st.write("""
+            Click the *Make Prediction* button below to generate predictions for the test dataset.
             """)
 
     if st.button('Make Prediction'):
@@ -332,29 +336,29 @@ def load_pred_functions():
         
     st.write("""
             We evaluate the performance of our model using various visualization techniques to understand its effectiveness and potential areas for improvement:
-            - **Confusion Matrix**: Visualizes the performance of the classification model by showing the number of correct and incorrect predictions for each class, helping to identify how well the model distinguishes between different classes.
             - **Distribution of Predictions**: Displays the frequency of predicted classes, providing insight into the overall prediction distribution and helping to identify any class imbalance in the model's predictions.
+            - **Confusion Matrix**: Visualizes the performance of the classification model by showing the number of correct and incorrect predictions for each class, helping to identify how well the model distinguishes between different classes.
             - **PCA Component Plot**: The PCA component plot provides a visual indication whether the model is effectively using the principal components to distinguish between the two classes.
             """)
     
     plot_type = st.selectbox(
         "Choose a plot to display:",
-        ["Select Plot", "Confusion Matrix", "Prediction Distribution", "PCA Component Plot"]
+        ["Select Plot", "Prediction Distribution", "Confusion Matrix", "PCA Component Plot"]
         )
-    
-    if plot_type == "Confusion Matrix":
-        fig = plot_confusion_matrix(y_true, y_pred)
-        st.pyplot(fig)
-        st.write("""
-                The confusion matrix shows that the model correctly predicted 155,420 instances of 'Reached (<=6 min)' but misclassified 61,878 instances of 'Reached (<=6 min)' as 'Not Reached (>6 min)', representing a considerable number of false negatives.
-                """)
-        
-    elif plot_type == "Prediction Distribution":
+
+    if plot_type == "Prediction Distribution":
         fig = plot_pred_dist(y_pred)
         st.pyplot(fig)
         st.write("""
                 The distr
                 ibution plot indicates that the model predicts more instances of 'Goal Reached (<=6 min)' compared to 'Goal not Reached (>6 min)', providing insight into the model's tendency and potential class imbalance in the predictions.
+                """)
+    
+    elif plot_type == "Confusion Matrix":
+        fig = plot_confusion_matrix(y_true, y_pred)
+        st.pyplot(fig)
+        st.write("""
+                The confusion matrix shows that the model correctly predicted 155,420 instances of 'Reached (<=6 min)' but misclassified 61,878 instances of 'Reached (<=6 min)' as 'Not Reached (>6 min)', representing a considerable number of false negatives.
                 """)
         
     elif plot_type == "PCA Component Plot":
