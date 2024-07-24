@@ -777,6 +777,7 @@ def plot_loadings(loadings_df, pc, top_n=5):
 
     plt.figure(figsize=(10, 6))
     sns.set_theme(style="whitegrid")
+    sns.set_palette('Set2')
     ax = sns.barplot(x=pc_loadings_top_bottom.values, y=pc_loadings_top_bottom.index)
     ax.set_title(f'Top and Bottom PCA Loadings for {pc}', fontsize=16, color='white')
     ax.set_xlabel('Loading Value', fontsize=14, color='white')
