@@ -27,8 +27,12 @@ if __name__ == "__main__":
     command = "streamlit run streamlit_app_demo.py --browser.gatherUsageStats=false"
     event_handler = StreamlitHandler(command)
     observer = Observer()
-    observer.schedule(event_handler, path='.', recursive=True)
-    observer.schedule(event_handler, path='./tabs', recursive=True)
+    
+    # Ensure the paths are correct
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    observer.schedule(event_handler, path=project_dir, recursive=True)
+    observer.schedule(event_handler, path=os.path.join(project_dir, 'tabs'), recursive=True)
+    
     observer.start()
 
     try:
