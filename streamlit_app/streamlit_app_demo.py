@@ -52,12 +52,13 @@ if page == pages[3]:
     results.load_interpret_functions()
     results.load_pc_load_functions()
     
-
+    
 # Conclusion
 if page == pages[4]:
     st.title("Conclusion")
 
     conclusion.conclusion_text()
+
 
 # About
 if page == pages[5]:
