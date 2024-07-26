@@ -53,10 +53,10 @@ def show_data_sets():
     st.write("""
     The exploratory data analysis (EDA) for this project involves four primary datasets, each serving a unique purpose:
 
-    1. **LFB Incident Dataset**: Encompasses incidents handled by the London Fire Brigade (LFB) since January 2009, with 39 columns and 716,551 rows.
-    2. **LFB Mobilisation Dataset**: Details the fire engines dispatched to incidents, with 22 columns and 2,373,348 rows, providing insights into LFB's response activities.
-    3. **Google Maps**: Provides the locations of fire stations across London, essential for spatial analysis.
-    4. **Bank Holidays Dataset**: Includes all bank holidays in London, useful for examining the impact on incident response times and patterns.
+    1. **[LFB Incident Dataset](https://data.london.gov.uk/dataset/london-fire-brigade-incident-records)**: Encompasses incidents handled by the London Fire Brigade (LFB) since January 2009, with 39 columns and 716,551 rows.
+    2. **[LFB Mobilisation Dataset](https://data.london.gov.uk/dataset/london-fire-brigade-mobilisation-records)**: Details the fire engines dispatched to incidents, with 22 columns and 2,373,348 rows, providing insights into LFB's response activities.
+    3. **[Google Maps](https://www.google.com/maps/d/u/0/viewer?mid=1f3Kgp7Qx5v0w-sXKomdR8DzD9u4&ll=51.50696950000004%2C-0.2769568999999672&z=11)**: Provides the locations of fire stations across London, essential for spatial analysis.
+    4. **[Bank Holidays Dataset](https://www.dmo.gov.uk/media/bfknrcrn/ukbankholidays-jul19.xls)**: Includes all bank holidays in London, useful for examining the impact on incident response times and patterns.
     """)
     
     st.write('Incidents Dataset')
@@ -118,6 +118,9 @@ def show_preprocessing_steps():
 def show_final_dataset():
     st.write("### Final Dataset")
     df_final_prev = pd.read_csv(os.path.join(data_path, 'df_prev.csv'))
+    num_rows, num_cols = df_final_prev.shape
+    num_rows = '1.537.704'
+    st.write(f"The final DataFrame has {num_rows} rows and {num_cols} columns.")
     st.write(df_final_prev)
     
 def show_image(file_name, caption, description):
