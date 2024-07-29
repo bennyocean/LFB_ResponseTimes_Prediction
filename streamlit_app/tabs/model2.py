@@ -240,9 +240,9 @@ def baseline_binary_classification():
     baseline_models_paragraph = """
     <div style="text-align: justify;">
     For the baseline estimation of this new <span style="font-weight: 900;">binary classification</span> problem, we conducted 
-    <span style="font-weight: 900;">XGBoost</span>, <span style="font-weight: 900;">Logistic Regression</span>, 
-    <span style="font-weight: 900;">Random Forest</span>, and <span style="font-weight: 900;">Decision Tree</span> 
-    to find the most promising models. We also tried KNN and SVM, but they were computationally too demanding. 
+    <span style="font-weight: 900;">XGBoost</span>, <span style="font-weight: 900;">Logistic Regression</span>, and 
+    <span style="font-weight: 900;">Random Forest</span>
+    to find the most promising model. We also tried others (among them KNN and SVM), but they were computationally too demanding. 
     The graph below depicts the <span style="font-weight: 900;">accuracy</span> and the 
     <span style="font-weight: 900;">recall of the 0-class</span> for these baseline models and compares them.
     </div>
@@ -252,9 +252,9 @@ def baseline_binary_classification():
     st.write("")
 
     # Data extraction
-    models = ['Decision Tree', 'Random Forest', 'Logistic Regression', 'XGBoost']
-    accuracy = [0.67, 0.74, 0.75, 0.76]
-    recall_class_0 = [0.43, 0.39, 0.29, 0.36]
+    models = ['Random Forest', 'Logistic Regression', 'XGBoost']
+    accuracy = [0.74, 0.75, 0.76]
+    recall_class_0 = [0.39, 0.29, 0.36]
 
     # Bar width
     bar_width = 0.35
@@ -294,28 +294,29 @@ def baseline_binary_classification():
     st.pyplot(fig)
 
     # Block aligned text using HTML
-    evaluation_paragraph = """
+    recall_paragraph = """
     <div style="text-align: justify;">
-    For the baseline model evaluation, we focused on <span style="font-weight: 900;">accuracy</span>, 
-    which measures the proportion of correctly predicted instances. High accuracy indicates effective overall performance. 
-    <span style="font-weight: 900;">Random Forest</span>, <span style="font-weight: 900;">Logistic Regression</span>, 
-    and <span style="font-weight: 900;">XGBoost</span> showed the most promise. 
-    We will continue with these models. Use the drop-down menu below to explore the classification reports.
+    We primarily focus on the <span style="font-weight: 900;">recall of the 0-class</span> to emphasize identifying incidents 
+    where the London Fire Brigade did not meet the 6-minute response time target. By prioritizing recall, our model minimizes 
+    the risk associated with failing to accurately predict these critical incidents.
+    
+    <ul>
+        <li><span style="font-weight: 900;">Random Forest</span>: Achieves the highest recall for the 0-class among baseline models, making it the 
+        most effective at identifying delayed responses.</li>
+        <li><span style="font-weight: 900;">XGBoost</span>: Excels in overall accuracy, ensuring a balanced performance across all classes.</li>
+    </ul>
+
+    While recall of the 0-class is crucial for pinpointing delayed responses, <span style="font-weight: 900;">accuracy</span> is also important 
+    as it reflects the model's ability to correctly predict across all incidents, thereby maintaining overall reliability.
     </div>
     """
-    st.markdown(evaluation_paragraph, unsafe_allow_html=True)
+    
+    st.markdown(recall_paragraph, unsafe_allow_html=True)
 
     st.write("")
 
     # Classification reports
     classification_reports = {
-        'Decision Tree': {
-            'Class': ['Class 0', 'Class 1', 'Accuracy', 'Macro Avg', 'Weighted Avg'],
-            'Precision': [0.44, 0.77, '', 0.60, 0.67],
-            'Recall': [0.43, 0.77, '', 0.60, 0.67],
-            'F1-score': [0.44, 0.77, 0.67, 0.60, 0.67],
-            'Support': [90243, 217298, 307541, 307541, 307541]
-        },
         'Random Forest': {
             'Class': ['Class 0', 'Class 1', 'Accuracy', 'Macro Avg', 'Weighted Avg'],
             'Precision': [0.60, 0.78, '', 0.69, 0.72],
@@ -372,7 +373,7 @@ def advanced_binary_classification():
     """
     st.markdown(improvement_methods_paragraph, unsafe_allow_html=True)
 
-    st.subheader("Principal Component Analysis")
+    st.markdown("#### Principal Component Analysis")
 
     # Block aligned text using HTML
     pca_paragraph = """
@@ -395,8 +396,8 @@ def advanced_binary_classification():
     # Block aligned text using HTML
     variance_paragraph = """
     <div style="text-align: justify;">
-    Based on the graph of explained variance by the number of components, we decided on using 23 components, 
-    which explains approximately 85% of the total variance. This balance maintains substantial original data 
+    Based on the graph of explained variance by the number of components, we decided on using <span style="font-weight: 900;">23 components</span>, 
+    which explains approximately <span style="font-weight: 900;">85% of the total variance</span>. This balance maintains substantial original data 
     information while significantly reducing the feature space.
     </div>
     """
@@ -404,28 +405,31 @@ def advanced_binary_classification():
 
     st.write("")
 
-    st.subheader("Undersampling")
+    st.markdown("#### Balancing")
 
     # Block aligned text using HTML
     undersampling_paragraph = """
     <div style="text-align: justify;">
     In a binary classification problem where 29% of observations are class 0 (London Fire Brigade response time over 6 minutes) 
-    and 71% are class 1 (response time under 6 minutes), undersampling the majority class (class 1) balances the dataset. This approach:
+    and 71% are class 1 (response time under 6 minutes), <span style="font-weight: 900;">undersampling the majority class (class 1) balances the dataset</span>. This approach:
     <ul>
         <li>Helps the model focus on detecting the minority class 0, minimizing the risk of missing critical instances and ensuring better detection of slower response times</li>
-        <li>Reduces the amount of data and hence computational demand</li>
+        <li>Reduces the amount of data and hence computational demand (as compared to e.g. oversampling)</li>
     </ul>
+    Specifically, we made use of so-called <span style="font-weight: 900;">random undersampling</span>.
     </div>
     """
     st.markdown(undersampling_paragraph, unsafe_allow_html=True)
 
-    st.subheader("Hyperparameters")
+    st.write("")
+
+    st.markdown("#### Hyperparameters")
 
     # Block aligned text using HTML
     hyperparameter_paragraph = """
     <div style="text-align: justify;">
     <span style="font-weight: 900;">Hyperparameter tuning</span> can significantly improve model performance by optimizing key parameters. 
-    The drop-down menu below shows the best hyperparameters for the three most promising models.
+    The drop-down menu below shows our best hyperparameters for the three aformentioned classification models.
     </div>
     """
     st.markdown(hyperparameter_paragraph, unsafe_allow_html=True)
@@ -450,49 +454,50 @@ def advanced_binary_classification():
     st.write(f"Best Hyperparameters for {model}:")
     st.table(df_params[model])
 
-    st.subheader("Ensemble Methods")
+    st.markdown("#### Ensemble Methods")
 
     # Block aligned text using HTML
     ensemble_methods_paragraph = """
     <div style="text-align: justify;">
     To enhance our binary classification model performance, we implemented ensemble methods on top of 
-    <span style="font-weight: 900;">PCA</span>, <span style="font-weight: 900;">undersampling</span>, and optimal 
+    <span style="font-weight: 900;">PCA</span>, <span style="font-weight: 900;">random undersampling</span>, and optimal 
     <span style="font-weight: 900;">hyperparameters</span>. Specifically, we utilized:
     <ul>
         <li>Bagging</li>
         <li>Boosting</li>
-        <li>A voting classifier</li>
-        <li>A stacking classifier</li>
+        <li>Voting classifier</li>
+        <li>Stacking classifier</li>
     </ul>
     This approach leverages the strengths of multiple algorithms for better predictive power and robustness. Due to computational constraints, 
     we focused on six final models: <span style="font-weight: 900;">Random Forest</span>, <span style="font-weight: 900;">XGBoost enhanced by bagging</span>, 
     <span style="font-weight: 900;">Logistic Regression enhanced by bagging</span>, 
     <span style="font-weight: 900;">a stacking classifier</span>, <span style="font-weight: 900;">a soft voting classifier</span>, and 
-    <span style="font-weight: 900;">a hard voting classifier</span>. These classifiers are constructed from the most promising models: Logistic Regression, Random Forest, and XGBoost.
+    <span style="font-weight: 900;">a hard voting classifier</span>. These classifiers are constructed from the three aforementioned classification models: Logistic Regression, Random Forest, and XGBoost.
     </div>
     """
     st.markdown(ensemble_methods_paragraph, unsafe_allow_html=True)
 
     st.write("")
 
-    st.subheader("Advanced Classification Model Comparison")
+    st.markdown("#### Advanced Classification Model Comparison")
 
     # Block aligned text using HTML
     recall_performance_paragraph = """
     <div style="text-align: justify;">
-    The following chart represents the recall performance of the six aforementioned models and compares them. We focus on the 
-    <span style="font-weight: 900;">recall of the 0 class</span>, which is our primary performance metric. A higher recall in this class 
+    The following chart represents the recall and accuracy performance of the six aforementioned models and compares them. As explained, we mainly focus on the 
+    <span style="font-weight: 900;">recall of the 0 class</span>. A higher recall in this class 
     reduces the risk of missing incidents where the London Fire Brigade did not meet its six-minute target response time. 
-    Accurately identifying these cases is crucial for improving safety and ensuring timely emergency response, aligning with our goal of enhancing public safety.
     </div>
     """
     st.markdown(recall_performance_paragraph, unsafe_allow_html=True)
+
+    st.write("")
 
     # Data for the models
     data = {
         'Model': ['Random Forest', 'Voting Classifier (Soft)', 'XGBoosting (Bag)', 'Logistic Regression (Bag)', 'Stacking Classifier', 'Voting Classifier (Hard)'],
         'Recall (0)': [0.61, 0.64, 0.63, 0.61, 0.63, 0.64],
-        'Recall (1)': [0.73, 0.71, 0.73, 0.71, 0.73, 0.72]
+        'Accuracy': [0.70, 0.69, 0.70, 0.68, 0.70, 0.69]
     }
 
     df = pd.DataFrame(data)
@@ -512,8 +517,8 @@ def advanced_binary_classification():
     colors_class1 = ['#d3d3d3' if model != 'Voting Classifier (Hard)' else '#add8e6' for model in df['Model']]  # Light grey and light blue
 
     # Plot bars with new colors
-    bars1 = ax.bar(index, df['Recall (0)'], bar_width, label='Class 0', color=colors_class0)
-    bars2 = ax.bar(index + bar_width, df['Recall (1)'], bar_width, label='Class 1', color=colors_class1)
+    bars1 = ax.bar(index, df['Recall (0)'], bar_width, label='Recall (0)', color=colors_class0)
+    bars2 = ax.bar(index + bar_width, df['Accuracy'], bar_width, label='Accuracy', color=colors_class1)
 
     # Add values to the bars
     for bar in bars1:
