@@ -18,16 +18,16 @@ def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-css_path = Path(__file__).resolve().parent / 'css' / 'style.css'
-local_css(css_path)
+#css_path = Path(__file__).resolve().parent / 'css' / 'style.css'
+#local_css(css_path)
 
 # Streamlit UI
 st.sidebar.title("Table of Contents")
 pages = ["Home", "Data", "Model", "Prediction", "Conclusion", "About"]
 page = st.sidebar.radio("Go to", pages)
-st.sidebar.markdown('<div class="sidebar-footer">', unsafe_allow_html=True)
-image_path = os.path.join(os.path.dirname(__file__), 'assets', 'logo-datascientest.png')
-st.sidebar.image(image_path, use_column_width=True)
+#st.sidebar.markdown('<div class="sidebar-footer">', unsafe_allow_html=True)
+#image_path = os.path.join(os.path.dirname(__file__), 'assets', 'logo-datascientest.png')
+#st.sidebar.image(image_path, use_column_width=True)
 
 # Home
 if page == pages[0]:
