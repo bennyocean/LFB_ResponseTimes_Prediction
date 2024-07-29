@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'tabs'))
 import eda
 import results
 import conclusion
+import model2
 
 # Streamlit UI
 st.sidebar.title("Table of Contents")
@@ -34,13 +35,10 @@ if page == pages[1]:
 
 # Model
 if page == pages[2]:
-    st.write("### Model")
-    st.markdown("""
-                - Regression model
-                - Classification model (balancing data / recall)
-                - Ensemble Methods (Voting classifier)
-                - Extra: deep-learning model
-                """)
+    st.title("Modelling Storyline")
+    model2.regression_design()
+    model2.baseline_binary_classification()
+    model2.advanced_binary_classification()
 
 
 # Prediction
