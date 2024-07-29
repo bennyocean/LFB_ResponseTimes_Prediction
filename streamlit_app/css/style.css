@@ -1,0 +1,62 @@
+body {
+  color: white;
+}
+
+h1 {
+  color: #e40000;
+}
+
+.sidebar-content {
+  background-color: #10b8dd;  
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 100px;
+}
+
+.st-emotion-cache-1cypcdb.eczjsme11 {
+  background-color: #10b8dd;
+}
+
+.st-emotion-cache-1cypcdb.eczjsme11 h1 {
+  color: #effe7a;
+}
+
+.stButton>button {
+  color: #ffffff;
+  background-color: #00c3ff;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.stSelectbox label {
+  color: #00ffff;
+}
+
+div[data-testid="stMarkdownContainer"] p {
+  display: block;  
+  margin: 0;       
+  font-size: 16px; 
+}
+
+h3 {
+  font-size: 24px; 
+  color: #effe7a;     
+  margin: 20px 0;  
+  padding: 10px;   
+  border-bottom: 2px solid #ccc;  
+}
+
+h4 {
+  color: #effe7a
+}

@@ -21,7 +21,7 @@ def show_data_exploration():
     show_final_dataset()
 
 def show_data_visualization():
-    st.title('Statistical Analysis')
+    st.write('### 4. Statistical Analysis')
     st.write('We conducted several statistical analyses to evaluate the relevance of our data concerning the target variable.')
     
     images = {
@@ -49,7 +49,7 @@ def show_data_visualization():
         show_image(image_info['file_name'], image_info['caption'], image_info['description'])
 
 def show_data_sets():
-    st.write("### Data Sets")
+    st.write("### 1. Data Sets")
     st.write("""
     The exploratory data analysis (EDA) for this project involves four primary datasets, each serving a unique purpose:
 
@@ -74,7 +74,7 @@ def show_data_sets():
         st.write(mob.head(10))
 
 def target_variable():
-    st.write("### Setting the Target Variable")
+    st.write("### 2. Setting the Target Variable")
     st.write("""
     The target variable for this analysis is the total response time of the first pump arriving at the incident location, derived from the variable AttendanceTimeSeconds in the mobilisation dataset. We renamed it TotalResponseTime.
     """)
@@ -84,7 +84,7 @@ def target_variable():
                'Distribution of total response times before logarithmic transformation to understand data spread.')
 
 def show_feature_engineering():
-    st.write("### Feature Engineering")
+    st.write("### 3. Feature Engineering")
     st.write("""
     Feature engineering is essential for transforming raw data into meaningful features that enhance model predictive power. In this analysis, several features were engineered:
 
@@ -97,7 +97,7 @@ def show_feature_engineering():
     show_image('mean_total_response_time_heatmap_beforebinary.png', 'Mean Total Response Time per Grid Cell', 'This heatmap shows the mean total response times per grid cell.')
 
 def show_preprocessing_steps():
-    st.write("### Removing Irrelevant Data")
+    st.write("### 5. Removing Irrelevant Data")
     st.write("""
     To streamline analysis and enhance model performance, irrelevant data was removed:
 
@@ -116,7 +116,7 @@ def show_preprocessing_steps():
     """)
 
 def show_final_dataset():
-    st.write("### Final Dataset")
+    st.write("### 6. Final Dataset")
     df_final_prev = pd.read_csv(os.path.join(data_path, 'df_prev.csv'))
     num_rows, num_cols = df_final_prev.shape
     num_rows = '1.537.704'
