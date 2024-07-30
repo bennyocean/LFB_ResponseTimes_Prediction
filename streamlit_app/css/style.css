@@ -6,29 +6,19 @@ h1 {
   color: #10b8dd;
 }
 
-.sidebar-content {
-  background-color: #10b8dd;  
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 .sidebar-footer {
   margin-top: auto;
-  padding-top: 100px;
+  padding-top: 0.5em;
 }
 
-.st-emotion-cache-1cypcdb.eczjsme11 {
-  background-color: #10b8dd;
-}
-
-.st-emotion-cache-1cypcdb.eczjsme11 h1 {
-  color: #effe7a;
+div[data-testid="stSidebar"] p {
+  color: white;
+  font-size: 10em; 
 }
 
 .stButton>button {
   color: #ffffff;
-  background-color: #00c3ff;
+  background-color: #10b8dd;
   border: none;
   padding: 10px 20px;
   text-align: center;
@@ -39,8 +29,13 @@ h1 {
   cursor: pointer;
 }
 
+.stButton>button:hover {
+  color: #ffffff;           
+  background-color: #10b8dd; 
+}
+
 .stSelectbox label {
-  color: #00ffff;
+  color: #10b8dd;
 }
 
 div[data-testid="stMarkdownContainer"] p {
@@ -51,12 +46,43 @@ div[data-testid="stMarkdownContainer"] p {
 
 h3 {
   font-size: 24px; 
-  color: #effe7a;     
+  color: #10b8dd;     
   margin: 20px 0;  
   padding: 10px;   
   border-bottom: 2px solid #ccc;  
 }
 
 h4 {
-  color: #effe7a
+  color: #10b8dd
+}
+
+a {
+  color: #10b8dd;  
+}
+
+a:hover {
+  color: #10b8dd;  
+}
+
+a:visited {
+  color: #10b8dd;  
+}
+
+a:active {
+  color: #10b8dd;  
+}
+
+div[data-testid="stSidebarContent"] {
+  font-size: 180px; 
+  background-color: #10b8dd; 
+}
+
+div[data-testid="stSidebarContent"] h1 {
+  color: white; 
+  font-size: 35px;
+}
+
+div[data-testid="stSidebarContent"] .element-container p {
+  font-size: 25px;
+  color: #ffffff;
 }

@@ -59,7 +59,6 @@ def show_data_sets():
     4. **[Bank Holidays Dataset](https://www.dmo.gov.uk/media/bfknrcrn/ukbankholidays-jul19.xls)**: Includes all bank holidays in London, useful for examining the impact on incident response times and patterns.
     """)
     
-    st.write('Incidents Dataset')
     incidents = pd.read_csv(os.path.join(data_path, 'incidents_prev.csv'))
     incidents['IncidentNumber'] = np.round(incidents['IncidentNumber'])
     mob = pd.read_csv(os.path.join(data_path, 'mob_prev.csv'))
