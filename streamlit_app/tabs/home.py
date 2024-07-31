@@ -6,8 +6,10 @@ image_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images')
 # image source: https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.magirusgroup.com%2Fde%2Fen%2Fserving-heroes%2Fdeliveries%2Fdetail%2Fdelivery%2Fthree-m64l-for-london-11-2021%2F&psig=AOvVaw0EtxRpWJgRz23bLB3_HHf0&ust=1722337783378000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCLjHxMCOzIcDFQAAAAAdAAAAABAE
 
 def homepage():
-    st.title("London Fire Brigade Response Time")
-    
+    st.title("Response Time Prediction for the LONDON FIRE BRIGADE")
+
+    st.write("""##""")
+                 
     show_image('LFB_Truck.jpg')
     
     st.write("""

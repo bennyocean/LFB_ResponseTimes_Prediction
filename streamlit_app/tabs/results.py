@@ -350,8 +350,7 @@ def load_pred_functions():
         fig = plot_pred_dist(y_pred)
         st.pyplot(fig)
         st.write("""
-                The distr
-                ibution plot indicates that the model predicts more instances of 'Goal Reached (<=6 min)' compared to 'Goal not Reached (>6 min)', providing insight into the model's tendency and potential class imbalance in the predictions.
+                The distribution plot indicates that the model predicts more instances of 'Goal Reached (<=6 min)' compared to 'Goal not Reached (>6 min)', providing insight into the model's tendency and potential class imbalance in the predictions.
                 """)
     
     elif plot_type == "Confusion Matrix":
