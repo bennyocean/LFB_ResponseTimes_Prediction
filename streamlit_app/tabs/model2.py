@@ -18,34 +18,35 @@ def regression_design():
     regression_paragraph = """
     <div style="text-align: justify;">
     In a first step, we opted for a <span style="font-weight: 900;">regression design</span> with a 
-    <span style="font-weight: 900;">continuous dependent variable</span> (logarithmic response time in seconds) 
-    to predict the <span style="font-weight: 900;">response time</span> of the London Fire Brigade for a given incident.
-    We employ aforementioned engineered features based on the respective data analyses and estimate:
+    <span style="font-weight: 900;">continuous dependent variable</span> 
+    to predict the response time of the London Fire Brigade for a given incident.
+    We employ aforementioned engineered features and estimate a structure of the form:
     </div>
     """
     st.markdown(regression_paragraph, unsafe_allow_html=True)
 
     st.markdown(r"""
                     $$
-                    \text{ResponseTime}_i = \beta_0 + \beta_1 \text{Location}_i + \beta_2 \text{Timing}_i + \beta_3 \text{IncidentType}_i + \epsilon_i,
+                    \text{ResponseTime}_i = \beta_0 + \beta_1 \text{Location}_i + \beta_2 \text{DateTime}_i + \beta_3 \text{IncidentCategory}_i + \epsilon_i,
                     $$
                     """)
 
     st.write("where:")
         
     st.markdown("""
-                    - _ResponseTime:_ continuous in seconds (ln)
-                    - _Location:_ distance to station (ln), cell
-                    - _Timing:_ month, day, hour (cycle encoded)
-                    - _IncidentType:_ incident type, property category.
+                    - _i:_ individual incident
+                    - _ResponseTime:_ logged continuous target variable
+                    - _Location:_ logged distance to nearest LFB station, grid cell ID
+                    - _DateTime:_ various datetime variables, including ‘IsWeekend’, ‘IsHoliday’ as well as cyclic encoded hour, day, month
+                    - _IncidentCategory:_ incident type, property category.
                     """)
 
     # Block aligned text using HTML
     model_comparison_paragraph = """
     <div style="text-align: justify;">
-    We utilized various models to achieve optimal performance: <span style="font-weight: 900;">Linear Regression</span>, 
+    We employed various algorithms to achieve optimal performance: <span style="font-weight: 900;">Linear Regression</span>, 
     <span style="font-weight: 900;">SVR</span>, <span style="font-weight: 900;">ElasticNet</span>, <span style="font-weight: 900;">Random Forest</span>, and <span style="font-weight: 900;">XGBoost</span>. 
-    The graph below allows for a comparison of the <span style="font-weight: 900;">R<sup>2</sup> values</span> of these models.
+    The graph below allows for a comparison of their respective <span style="font-weight: 900;">R<sup>2</sup> values</span> on the test set (0.2 split throughout).
     </div>
     """
     st.markdown(model_comparison_paragraph, unsafe_allow_html=True)
@@ -102,78 +103,69 @@ def regression_design():
     xgboost_performance_paragraph = """
     <div style="text-align: justify;">
     The <span style="font-weight: 900;">XGBoost model</span> demonstrates superior performance with an 
-    <span style="font-weight: 900;">R<sup>2</sup> of 0.28</span>. However, this value remains quite low. 
-    The drop-down and respective tables enable you to further deep dive into the performance of each regression model,
-    differentiated by train and test set. 
+    <span style="font-weight: 900;">R<sup>2</sup> of 0.28</span>. However, this value remains low. 
+    The table below enables to further deep dive into the performance of the regression models. 
     </div>
     """
     st.markdown(xgboost_performance_paragraph, unsafe_allow_html=True)
 
     st.write("")
 
-    # Create the drop-down menu with the specified options, sorted alphabetically
-    models = ['ElasticNet', 'Linear', 'RandomForest', 'SVR', 'XGBoost']
-    option = st.selectbox(
-        'Select Regression Model',
-        sorted(models),
-        key='regression_model'
-    )
+    # Create a dictionary to store the test statistics for each model
+    models_data = {
+        'Model': ['ElasticNet', 'Linear', 'RandomForest', 'SVR', 'XGBoost'],
+        'MAE': [
+            0.25545761314687493,  # ElasticNet Test
+            0.2519433325250212,   # Linear Test
+            0.25199285030288776,  # RandomForest Test
+            0.2561106142710682,   # SVR Test
+            0.24655474317735396   # XGBoost Test
+        ],
+        'MSE': [
+            0.11898889477455021,  # ElasticNet Test
+            0.11717495251075341,  # Linear Test
+            0.11922500758786787,  # RandomForest Test
+            0.12388264556394395,  # SVR Test
+            0.11306704579074599   # XGBoost Test
+        ],
+        'RMSE': [
+            0.3449476696175091,   # ElasticNet Test
+            0.3423082711690639,   # Linear Test
+            0.3452897444000732,   # RandomForest Test
+            0.35196966568717813,  # SVR Test
+            0.3362544360908061    # XGBoost Test
+        ],
+        'R2': [
+            0.24175655092793624,  # ElasticNet Test
+            0.2533156955113437,   # Linear Test
+            0.2402519483826373,   # RandomForest Test
+            0.21057167031803015,  # SVR Test
+            0.2794928725138395    # XGBoost Test
+        ]
+    }
 
-    # Generate DataFrames with specific values for each model
-    def get_dataframes():
-        dataframes = {
-            'Linear': pd.DataFrame({
-                'MAE': [0.2519433325250212, 0.2519433325250212],
-                'MSE': [0.11717495251075341, 0.11717495251075341],
-                'RMSE': [0.3423082711690639, 0.3423082711690639],
-                'R2': [0.2533156955113437, 0.2533156955113437]
-            }, index=['Train', 'Test']),
-            'SVR': pd.DataFrame({
-                'MAE': [0.2558656794132485, 0.2561106142710682],
-                'MSE': [0.12408780585377704, 0.12388264556394395],
-                'RMSE': [0.35226099110429054, 0.35196966568717813],
-                'R2': [0.2104036650955159, 0.21057167031803015]
-            }, index=['Train', 'Test']),
-            'ElasticNet': pd.DataFrame({
-                'MAE': [0.25533744097237526, 0.25545761314687493],
-                'MSE': [0.1193540954470088, 0.11898889477455021],
-                'RMSE': [0.34547662069524876, 0.3449476696175091],
-                'R2': [0.24052524200604553, 0.24175655092793624]
-            }, index=['Train', 'Test']),
-            'RandomForest': pd.DataFrame({
-                'MAE': [0.09523092764143488, 0.25199285030288776],
-                'MSE': [0.01763047607671788, 0.11922500758786787],
-                'RMSE': [0.13277980296987144, 0.3452897444000732],
-                'R2': [0.887813639728614, 0.2402519483826373]
-            }, index=['Train', 'Test']),
-            'XGBoost': pd.DataFrame({
-                'MAE': [0.2451064377952239, 0.24655474317735396],
-                'MSE': [0.1120386260875857, 0.11306704579074599],
-                'RMSE': [0.33472171439508625, 0.3362544360908061],
-                'R2': [0.28707508430975415, 0.2794928725138395]
-            }, index=['Train', 'Test'])
-        }
-        return dataframes
+    # Create a DataFrame from the dictionary
+    df_test_statistics = pd.DataFrame(models_data)
 
-    # Retrieve the DataFrames
-    dataframes = get_dataframes()
+    # Set the Model column as the index for better display
+    df_test_statistics.set_index('Model', inplace=True)
 
-    # Display the table for the selected model
-    st.table(dataframes[option])
+    # Display the table
+    st.table(df_test_statistics)
 
 
 
 
 def baseline_binary_classification():
-    st.subheader("2. Baseline Binary Classification")
+    st.subheader("2. Binary Classification Design")
 
     # Block aligned text using HTML
     classification_paragraph = """
     <div style="text-align: justify;">
-    Because the performance on the regression design was quite unsatisfactory, we pivoted to a 
-    <span style="font-weight: 900;">binary classification</span> of the problem. We found that the 
-    <span style="font-weight: 900;">London Fire Brigade</span> set a goal of six minutes for the response time, 
-    from the reception of the call for an incident to the first pump arriving at the respective location (LFB, 2022). 
+    Because the performance of the regression design was unsatisfactory, we pivoted to a 
+    <span style="font-weight: 900;">binary classification</span> of the problem. The 
+    LFB set itself a goal of six minutes for the response time, 
+    from the reception of an emergency call to the first pump arriving at the incident (LFB, 2022). 
     Based on this information, we constructed a new <span style="font-weight: 900;">binary target variable</span>: 
     <ul>
     <li><span style="font-weight: 900;">0</span> if the response time of an incident is above 360 seconds</li>
@@ -212,37 +204,16 @@ def baseline_binary_classification():
     # Display the plot in Streamlit
     st.pyplot(fig)
 
-    # Block aligned text using HTML
-    classification_model_paragraph = """
-    <div style="text-align: justify;">
-    For the <span style="font-weight: 900;">binary classification model</span>, we estimate a similar equation as for the 
-    regression design, utilizing the same features with only the target variable being different:
-    </div>
-    """
-    st.markdown(classification_model_paragraph, unsafe_allow_html=True)
-
-    st.markdown(r"""
-                    $$
-                    \text{TargetReached}_i = \beta_0 + \beta_1 \text{Location}_i + \beta_2 \text{Timing}_i + \beta_3 \text{IncidentType}_i + \epsilon_i,
-                    $$
-                    """)
-
-    st.write("where")
-
-    st.markdown("""
-                    - _TargetReached:_ binary
-                    - _Location:_ distance to station (ln), cell
-                    - _Timing:_ month, day, hour (cycle encoded)
-                    - _IncidentType:_ incident type, property category.
-                    """)
-
+   
     # Block aligned text using HTML
     baseline_models_paragraph = """
     <div style="text-align: justify;">
-    For the baseline estimation of this new <span style="font-weight: 900;">binary classification</span> problem, we conducted 
-    <span style="font-weight: 900;">XGBoost</span>, <span style="font-weight: 900;">Logistic Regression</span>, and 
-    <span style="font-weight: 900;">Random Forest</span>
-    to find the most promising model. We also tried others (among them KNN and SVM), but they were computationally too demanding. 
+    For the classification model, we estimate a similar structure as for the 
+    regression design, utilizing the same features, 
+    with the key difference of a <span style="font-weight: 900;">binary taregt variable</span> as compared to the continuous one.
+    We tested several algorithms, to achieve the best possbile performance, of which three proved to be the most viable in terms of complexity and accuracy: 
+    <span style="font-weight: 900;">Logistic Regression</span>,
+    <span style="font-weight: 900;">Random Forest</span>, and <span style="font-weight: 900;">XGBoost</span>. 
     The graph below depicts the <span style="font-weight: 900;">accuracy</span> and the 
     <span style="font-weight: 900;">recall of the 0-class</span> for these baseline models and compares them.
     </div>
@@ -271,19 +242,34 @@ def baseline_binary_classification():
     bars1 = ax.barh(r1, accuracy, color='#d3d3d3', height=bar_width, edgecolor='grey', label='Accuracy')
     bars2 = ax.barh(r2, recall_class_0, color='#87CEEB', height=bar_width, edgecolor='grey', label='Recall (Class 0)')
 
+    # Set the x-axis limits
+    ax.set_xlim(0.2, 0.8)
+
+    ax.grid(axis='x', color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
+    ax.set_axisbelow(True)
+
     # Add data labels
     for bars in [bars1, bars2]:
         for bar in bars:
+            # Width represents the value on the x-axis
             width = bar.get_width()
-            ax.text(width + 0.01, bar.get_y() + bar.get_height()/2, f'{width:.2f}', 
-                    va='center', ha='left', color='black', fontsize=12)
+        
+            # Adding the value text next to the bar
+            ax.text(
+                width + 0.01,  # Adjusts the position of the label to the right of the bar
+                bar.get_y() + bar.get_height() / 2,  # Vertically centers the label
+                f'{width:.2f}',  # Formats the text with two decimal places
+                va='center',  # Vertically aligns the text to the center
+                ha='left',  # Horizontally aligns the text to the left of the starting point
+                color='white',  # Sets the text color
+                fontsize=12  # Sets the font size
+            )
 
     # General layout
     ax.set_yticks([r + bar_width / 2 for r in range(len(models))])
     ax.set_yticklabels(models, color='white')
     ax.invert_yaxis()  # Invert y-axis to have the first model on top
     ax.set_xlabel('Score', color='white')
-    ax.set_title('Baseline Classification Model Comparison', color='white')
     ax.legend(loc='lower right')
 
     # Set tick parameters
@@ -297,7 +283,7 @@ def baseline_binary_classification():
     recall_paragraph = """
     <div style="text-align: justify;">
     We primarily focus on the <span style="font-weight: 900;">recall of the 0-class</span> to emphasize identifying incidents 
-    where the London Fire Brigade did not meet the 6-minute response time target. By prioritizing recall, our model minimizes 
+    where the LFB did not meet the 6-minute response time target. By prioritizing recall, our model minimizes 
     the risk associated with failing to accurately predict these critical incidents.
     
     <ul>
@@ -357,16 +343,16 @@ def baseline_binary_classification():
 
 
 def advanced_binary_classification():
-    st.subheader("3. Advanced Binary Classification")
+    st.subheader("3. Model Optimization")
 
     # Block aligned text using HTML
     improvement_methods_paragraph = """
     <div style="text-align: justify;">
-    To improve upon the baseline model performance, we used:
+    To improve upon the baseline classification performance, we used:
     <ul>
         <li><span style="font-weight: 900;">PCA</span> for dimensionality reduction</li>
         <li><span style="font-weight: 900;">Undersampling</span> to balance the dataset</li>
-        <li><span style="font-weight: 900;">Hyperparameter tuning</span> to find the best parameters</li>
+        <li><span style="font-weight: 900;">Hyperparameter tuning</span> to find the best configurations</li>
         <li><span style="font-weight: 900;">Ensemble methods</span> to combine multiple models</li>
     </ul>
     </div>
@@ -378,9 +364,10 @@ def advanced_binary_classification():
     # Block aligned text using HTML
     pca_paragraph = """
     <div style="text-align: justify;">
-    In a context with numerous features, <span style="font-weight: 900;">Principal Component Analysis (PCA)</span> 
-    is beneficial for reducing dimensionality while retaining key information. PCA transforms features into uncorrelated components, 
-    mitigating multicollinearity and enhancing model performance and interpretability. The graph below depicts the cumulative explained variance by the number of components.
+    In a context with a large feature space, <span style="font-weight: 900;">Principal Component Analysis (PCA)</span> 
+    is beneficial for <span style="font-weight: 900;">reducing dimensionality</span> while retaining key information. PCA transforms features into uncorrelated components, 
+    enhancing model efficiency and thus allowing us to improve model performance through the subsequent optimization steps. 
+    Furthermore, it can assist in <span style="font-weight: 900;">interpretability</span>. The graph below depicts the cumulative explained variance by number of components.
     </div>
     """
     st.markdown(pca_paragraph, unsafe_allow_html=True)
@@ -397,23 +384,23 @@ def advanced_binary_classification():
     variance_paragraph = """
     <div style="text-align: justify;">
     Based on the graph of explained variance by the number of components, we decided on using <span style="font-weight: 900;">23 components</span>, 
-    which explains approximately <span style="font-weight: 900;">85% of the total variance</span>. This balance maintains substantial original data 
-    information while significantly reducing the feature space.
+    which explain approximately <span style="font-weight: 900;">85% of the original variance</span>. This balance maintains substantial full feature space 
+    information while significantly reducing the dimensionality.
     </div>
     """
     st.markdown(variance_paragraph, unsafe_allow_html=True)
 
     st.write("")
 
-    st.markdown("#### Balancing")
+    st.markdown("#### Undersampling")
 
     # Block aligned text using HTML
     undersampling_paragraph = """
     <div style="text-align: justify;">
-    In a binary classification problem where 29% of observations are class 0 (London Fire Brigade response time over 6 minutes) 
-    and 71% are class 1 (response time under 6 minutes), <span style="font-weight: 900;">undersampling the majority class (class 1) balances the dataset</span>. This approach:
+    In a binary classification problem where 29% of observations are class 0 (LFB response time over 6 minutes) 
+    and 71% are class 1 (LFB response time under 6 minutes), <span style="font-weight: 900;">undersampling the majority class (class 1) balances the dataset</span>. This approach:
     <ul>
-        <li>Helps the model focus on detecting the minority class 0, minimizing the risk of missing critical instances and ensuring better detection of slower response times</li>
+        <li>Helps the model focus on detecting the minority class 0, minimizing the risk of missing critical instances with slower response times</li>
         <li>Reduces the amount of data and hence computational demand (as compared to e.g. oversampling)</li>
     </ul>
     Specifically, we made use of so-called <span style="font-weight: 900;">random undersampling</span>.
@@ -423,13 +410,13 @@ def advanced_binary_classification():
 
     st.write("")
 
-    st.markdown("#### Hyperparameters")
+    st.markdown("#### Hyperparameter Tuning")
 
     # Block aligned text using HTML
     hyperparameter_paragraph = """
     <div style="text-align: justify;">
-    <span style="font-weight: 900;">Hyperparameter tuning</span> can significantly improve model performance by optimizing key parameters. 
-    The drop-down menu below shows our best hyperparameters for the three aformentioned classification models.
+    <span style="font-weight: 900;">Hyperparameter tuning</span> can significantly improve model performance by optimizing configurations that guide the training. 
+    The drop-down menu below shows our best hyperparameters, found using <span style="font-weight: 900;">GridSearchCV</span>, for the three aformentioned classification algorithms.
     </div>
     """
     st.markdown(hyperparameter_paragraph, unsafe_allow_html=True)
@@ -439,7 +426,7 @@ def advanced_binary_classification():
     # Best hyperparameters for each model
     best_params = {
         'Logistic Regression': {'C': 5, 'penalty': 'l2', 'solver': 'lbfgs'},
-        'Random Forest': {'criterion': 'gini', 'max_depth': 10, 'n_estimators': 200, 'random_state': 666},
+        'Random Forest': {'criterion': 'gini', 'max_depth': 10, 'n_estimators': 200},
         'XGBoost': {'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 200, 'subsample': 0.9}
     }
 
@@ -460,8 +447,8 @@ def advanced_binary_classification():
     ensemble_methods_paragraph = """
     <div style="text-align: justify;">
     To enhance our binary classification model performance, we implemented ensemble methods on top of 
-    <span style="font-weight: 900;">PCA</span>, <span style="font-weight: 900;">random undersampling</span>, and optimal 
-    <span style="font-weight: 900;">hyperparameters</span>. Specifically, we utilized:
+    <span style="font-weight: 900;">PCA</span>, <span style="font-weight: 900;">undersampling</span>, and 
+    <span style="font-weight: 900;">hyperparameter tuning</span>. Specifically, we utilized:
     <ul>
         <li>Bagging</li>
         <li>Boosting</li>
@@ -479,14 +466,14 @@ def advanced_binary_classification():
 
     st.write("")
 
-    st.markdown("#### Advanced Classification Model Comparison")
+    st.subheader("4. Model Evaluation")
 
     # Block aligned text using HTML
     recall_performance_paragraph = """
     <div style="text-align: justify;">
-    The following chart represents the recall and accuracy performance of the six aforementioned models and compares them. As explained, we mainly focus on the 
-    <span style="font-weight: 900;">recall of the 0 class</span>. A higher recall in this class 
-    reduces the risk of missing incidents where the London Fire Brigade did not meet its six-minute target response time. 
+    The following graph depicts the recall and accuracy performance of the six aforementioned models and compares them. As explained, we mainly focus on the 
+    <span style="font-weight: 900;">recall of the 0 class</span>. A higher recall for this class 
+    reduces the risk of missing critical incidents where the LFB did not meet its six-minute target. 
     </div>
     """
     st.markdown(recall_performance_paragraph, unsafe_allow_html=True)
@@ -532,7 +519,7 @@ def advanced_binary_classification():
                 ha='center', va='bottom', fontsize=10, color='black', weight='bold')
 
     # Set labels
-    ax.set_ylabel('Recall', fontsize=14)
+    ax.set_ylabel('Score', fontsize=14)
     ax.set_xticks(index + bar_width / 2)
     ax.set_xticklabels(df['Model'], rotation=45, ha='right', fontsize=12)
 
@@ -559,7 +546,7 @@ def advanced_binary_classification():
     <div style="text-align: justify;">
     The voting classifiers have the best recall performance on the 0-class, with the 
     <span style="font-weight: 900;">hard voting classifier</span> performing slightly better than the soft one in other metrics. 
-    Hence, we chose the hard voting classifier as our final model. The drop-down menu below enables you to select from various other performance measures 
+    Hence, we chose the hard voting classifier as our final model. The drop-down menu below allows to select from various other performance measures 
     to compare the six models, providing a comprehensive evaluation of their effectiveness.
     </div>
     """
@@ -570,19 +557,15 @@ def advanced_binary_classification():
     # Data for the models
     data = {
         'Model': ['Random Forest', 'Voting Classifier (Soft)', 'XGBoosting (Bag)', 'Logistic Regression (Bag)', 'Stacking Classifier', 'Voting Classifier (Hard)'],
-        'Accuracy': [0.6986, 0.6884, 0.6974, 0.6797, 0.6968, 0.6919],
+        'Accuracy': [0.70, 0.69, 0.70, 0.68, 0.70, 0.69],
         'Precision (0)': [0.49, 0.48, 0.49, 0.47, 0.49, 0.48],
         'Recall (0)': [0.61, 0.64, 0.63, 0.61, 0.63, 0.64],
         'F1-Score (0)': [0.54, 0.55, 0.55, 0.53, 0.55, 0.55],
         'Precision (1)': [0.82, 0.83, 0.83, 0.81, 0.82, 0.83],
         'Recall (1)': [0.73, 0.71, 0.73, 0.71, 0.73, 0.72],
-        'F1-Score (1)': [0.78, 0.76, 0.77, 0.76, 0.77, 0.77],
-        'Macro Avg. (0)': [0.65, 0.65, 0.66, 0.64, 0.66, 0.65],
-        'Macro Avg. (1)': [0.67, 0.67, 0.68, 0.66, 0.68, 0.67],
-        'Weighted Avg. (0)': [0.72, 0.72, 0.73, 0.71, 0.73, 0.72],
-        'Weighted Avg. (1)': [0.70, 0.69, 0.70, 0.68, 0.70, 0.69],
-        'ROC AUC Score': [0.7352, 0.7364, 0.7268, 0.6797, 0.7403, 0.6755]  # Note: some ROC AUC scores are made up for illustration
+        'F1-Score (1)': [0.78, 0.76, 0.77, 0.76, 0.77, 0.77]
     }
+      
 
     df = pd.DataFrame(data)
 
@@ -592,12 +575,9 @@ def advanced_binary_classification():
     # Dropdown menu for selecting metric, sorted alphabetically
     metrics = [
         'Accuracy', 
-        'F1-Score (0)', 'F1-Score (1)', 
-        'Macro Avg. (0)', 'Macro Avg. (1)', 
+        'F1-Score (0)', 'F1-Score (1)',  
         'Precision (0)', 'Precision (1)', 
         'Recall (0)', 'Recall (1)', 
-        'Weighted Avg. (0)', 'Weighted Avg. (1)',
-        'ROC AUC Score'
     ]
 
     metric = st.selectbox("Select a metric", sorted(metrics))
@@ -626,6 +606,9 @@ def advanced_binary_classification():
         ax.set_xlim(min_value - 0.01, max_value + 0.01)
     else:
         ax.set_xlim(0.5, 0.8)  # Custom limits for ROC AUC Score
+
+    ax.grid(axis='x', color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
+    ax.set_axisbelow(True)
 
     # Set the background color to match Streamlit background
     fig.patch.set_facecolor('#0e1117')
