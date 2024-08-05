@@ -86,3 +86,7 @@ div[data-testid="stSidebarContent"] .element-container p {
   font-size: 25px;
   color: #ffffff;
 }
+
+p{
+  text-align: justify;
+}
