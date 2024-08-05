@@ -16,7 +16,7 @@ div[data-testid="stSidebar"] p {
   font-size: 10em; 
 }
 
-.stButton>button {
+.selectbutton>button {
   color: #ffffff;
   background-color: #10b8dd;
   border: none;
@@ -29,9 +29,19 @@ div[data-testid="stSidebar"] p {
   cursor: pointer;
 }
 
-.stButton>button:hover {
-  color: #ffffff;           
-  background-color: #10b8dd; 
+a:link{
+  color: #10b8dd;
+}
+a:visited{
+  color: #10b8dd;
+}
+
+a:hover{
+  color: #10b8dd;
+}
+
+a:active{
+  color: #10b8dd;
 }
 
 .stSelectbox label {
