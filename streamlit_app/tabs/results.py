@@ -357,7 +357,7 @@ def load_pred_functions():
         fig = plot_confusion_matrix(y_true, y_pred)
         st.pyplot(fig)
         st.write("""
-                The confusion matrix shows that the model correctly predicted 155,420 instances of 'Reached (<=6 min)' but misclassified 61,878 instances of 'Reached (<=6 min)' as 'Not Reached (>6 min)', representing a considerable number of false negatives.
+                The confusion matrix shows that the model correctly predicted 155,420 instances of 'Reached (<=6 min)' but misclassified 32,859 instances of 'Not Reached (>6 min)' as 'Reached (<=6 min)', representing a considerable number of false positives.
                 """)
         
     elif plot_type == "PCA Component Plot":
