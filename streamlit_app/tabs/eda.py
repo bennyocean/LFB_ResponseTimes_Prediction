@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import FuncFormatter
 from PIL import Image
-from pathlib import Path
 import os
 
 image_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'images', 'eda')
