@@ -1,17 +1,14 @@
 import streamlit as st
-from streamlit_shap import st_shap
 import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from PIL import Image
 import shap
 import joblib
 import os
-import base64
 from io import BytesIO
 
 

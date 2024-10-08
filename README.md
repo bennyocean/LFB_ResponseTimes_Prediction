@@ -16,8 +16,9 @@ You can browse and run the [notebooks](./notebooks).
 
 You will need to install the dependencies (in a dedicated environment) :
 
-```
-pip install -r requirements.txt
+```shell
+conda create -f environment.yml
+conda activate lfb_env
 ```
 
 ## Streamlit App
@@ -25,9 +26,7 @@ pip install -r requirements.txt
 To run the app:
 
 ```shell
-conda create -f environment.yml
 conda activate lfb_env
-# optional: pip install -r requirements.txt
 streamlit run streamlit_app/lfb_streamlit.py
 ```
 

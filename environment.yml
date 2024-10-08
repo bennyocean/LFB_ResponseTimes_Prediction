@@ -1,14 +1,13 @@
 name: lfb_env
 channels:
   - conda-forge
-  - defaults
+#  - defaults
 dependencies:
   - python=3.10
   - numpy
   - pandas
   - scikit-learn=1.4.2 
   - streamlit
-  - shap
   - matplotlib
   - seaborn
   - shap=0.42.1
