@@ -4,9 +4,9 @@ def conclusion_text():
     # Summary of the Project
     st.subheader("Summary")
     st.write("""
-            - We ensured data quality and consistency, while the EDA provided insights into key factors influencing response times.
-            - In addition, we used different machine and deeplearning models and applied various optimization techniques to enhance model performance.
-            - Finally, the Voting Classifier yielded the best metrics, identifying the PC6 as the most influential feature in the model's prediction.
+            - Our EDA provided insights into key factors influencing response times and helped in selecting and engineering features.
+            - The model optimization process yielded a 25 percentage point performance increase compared to our best-performing baseline model.
+            - PC6 and PC3, driven by datetime and geographical variables, were identified as the most influential features.
             """)
 
     # Limitations

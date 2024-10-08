@@ -68,7 +68,7 @@ if page == pages[5]:
     st.title("About")
     
     st.write("""
-            The classification of the **London Fire Brigade's** response times is a capstone machine learning project from the Data Scientist bootcamp at [DataScientest.com](https://datascientest.com), in cooperation with [Panthéon-Sorbonne University](https://www.pantheonsorbonne.fr/).
+            The classification of the **London Fire Brigade's** response times is a capstone machine learning project from the Data Scientist bootcamp at [DataScientest.com](https://datascientest.com/en), in cooperation with [Panthéon-Sorbonne University](https://www.pantheonsorbonne.fr).
             """)
 
     st.write("### Project Members:")
@@ -84,7 +84,7 @@ if page == pages[5]:
     """)
 
     st.write("### Github:")
-    st.write("[LFB project](https://github.com/DataScientest-Studio/MAY24_BDS_INT_Fire_Brigade.git)")
+    st.write("[LFB project](https://github.com/bennyocean/LFB_ResponseTimes_Prediction)")
 
     st.write("### References:")
     st.write("""
@@ -100,3 +100,8 @@ if page == pages[5]:
             - Strumbelj, E., & Kononenko, I. (2010). *An Efficient Explanation of Individual Classifications using Game Theory.* Journal of Machine Learning Research, 11, 1–18. url: http://jmlr.org/papers/volume11/strumbelj10a/strumbelj10a.pdf
             - United Kingdom Debt Management Office (2024). *Bank Holidays Dataset*, url: https://www.dmo.gov.uk/media/bfknrcrn/ukbankholidays-jul19.xls
               """)
+    
+    st.write("### Image Source:")
+    st.write("""
+             https://www.magirusgroup.com/de/en/serving-heroes/deliveries/detail/delivery/three-m64l-for-london-11-2021/
+             """)

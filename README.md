@@ -1,40 +1,16 @@
-# ProjectTemplate
+## Introduction
 
-## Explanations and Instructions
+This repository contains the code for our project : **Response Time Prediction for the LONDON FIRE BRIGADE**. It has been developed during our [Data Scientist training](https://datascientest.com/en/data-scientist-course) at [DataScientest](https://datascientest.com/), in cooperation with [Panthéon-Sorbonne University](https://www.pantheonsorbonne.fr/).
 
-This repository contains the files needed to initialize a project for your [DataScientest](https://datascientest.com/) training.
-
-It contains mainly the present README.md file and an application template [Streamlit](https://streamlit.io/).
-
-**README**
-
-The README.md file is a central element of any git repository. It allows you to present your project, its objectives, and to explain how to install and launch the project, or even how to contribute to it.
-
-You will have to modify different sections of this README.md to include the necessary informations.
-
-- Complete the sections (`## Presentation and Installation` `## Streamlit App`) following the instructions in these sections.
-- Delete this section (`## Explanations and Instructions`)
-
-**Streamlit Application**
-
-A [Streamlit] application template (https://streamlit.io/) is available in the [streamlit_app](streamlit_app) folder. You can use this template to start with your project.
-
-## Presentation and Installation
-
-Complete this section with a brief description of your project, the context (including a link to the DataScientest course), and the objectives.
-
-You can also add a brief presentation of the team members with links to your respective networks (GitHub and/or LinkedIn for example).
-
-**Example:**
-
-This repository contains the code for our project **PROJECT_NAME**, developed during our [Data Scientist training](https://datascientest.com/en/data-scientist-course) at [DataScientest](https://datascientest.com/).
-
-The goal of this project is to **...**
+We aim to develop a machine learning model to predict the response times of the [London Fire Brigade (LFB)](https://www.london-fire.gov.uk/), thus, improving the operational efficiency and contributing to the economic and scientific advancement of emergency response services.
 
 This project was developed by the following team :
 
-- John Doe ([GitHub](https://github.com/) / [LinkedIn](http://linkedin.com/))
-- Martin Dupont ([GitHub](https://github.com/) / [LinkedIn](http://linkedin.com/))
+- Ismarah MAIER ([GitHub](https://github.com/isi-pizzy) / [LinkedIn](https://www.linkedin.com/in/ismarah-maier-18496613b/))
+- Clemens PAULSEN ([GitHub](https://github.com/ClemensPaulsen) / [LinkedIn](https://www.linkedin.com/in/clemens-paulsen-a65a5a155/))
+- Dr. Benjamin SCHELLINGER ([GitHub](https://github.com/bennyocean) / [LinkedIn](https://www.linkedin.com/in/benjaminschellinger/))
+
+## Instructions
 
 You can browse and run the [notebooks](./notebooks). 
 
@@ -46,15 +22,19 @@ pip install -r requirements.txt
 
 ## Streamlit App
 
-**Add explanations on how to use the app.**
+<img src="./streamlit.png" alt="Streamlit App Preview" width="800"/>
 
-To run the app (be careful with the paths of the files in the app):
+To run the app:
 
 ```shell
-conda create --name venv python=3.12.3
-conda activate venv
-pip install -r requirements.txt
-streamlit run streamlit_app.py
+conda create -f environment.yml
+conda activate lfb_env
+# optional: pip install -r requirements.txt
+streamlit run streamlit_app/lfb_streamlit.py
 ```
 
 The app should then be available at [localhost:8501](http://localhost:8501).
+
+## MLOps
+
+In progress and soon available :)
