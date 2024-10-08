@@ -1,18 +1,13 @@
-# Core Python packages
-numpy==1.26.0
-pandas==2.1.1
+numpy
+pandas
 scikit-learn==1.4.2
-matplotlib==3.8.0
-seaborn==0.13.2
-shap==0.42.1
-xgboost==1.6.2
-
-# Streamlit and related packages
 streamlit==1.39.0
 streamlit-shap==1.0.2
-
-# Other dependencies
-gdown==4.6.0
-
-# IPython for SHAP visualizations
-ipython==8.15.0
+matplotlib
+seaborn==0.13.2
+shap==0.42.1
+xgboost
+joblib
+ipython
+gdown
+setuptools
