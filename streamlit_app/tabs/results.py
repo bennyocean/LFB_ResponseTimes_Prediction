@@ -171,7 +171,7 @@ def load_y_test_pca():
     return y_test_pca
 
 def load_model():
-    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.joblib')
+    model_path = '/Users/bennyschellinger/Desktop/DataScience/Github/DataScientest_LFB_DataScience/streamlit_app/model_resaved.joblib'
     model = joblib.load(model_path)
     return model
 
@@ -370,7 +370,7 @@ def load_pred_functions():
 
 # Define paths to SHAP values and explainers
 xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb.pkl')
-xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb.pkl')
+xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb_resaved.pkl')
 
 rf_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_rf.pkl')
 rf_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_rf.pkl')
