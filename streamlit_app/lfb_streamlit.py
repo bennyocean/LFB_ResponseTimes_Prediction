@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from pathlib import Path
-from tabs import eda, results, conclusion, model2, home, about
+from streamlit_app.tabs import eda, results, conclusion, model2, home, about
 
 def local_css(file_name):
     with open(file_name) as f:

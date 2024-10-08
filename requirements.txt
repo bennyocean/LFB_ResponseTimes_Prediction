@@ -11,3 +11,4 @@ joblib==1.4.2
 ipython==8.28.0
 gdown
 setuptools
+numba==0.60.0
