@@ -13,3 +13,6 @@ streamlit-shap==1.0.2
 
 # Other dependencies
 gdown==4.6.0
+
+# IPython for SHAP visualizations
+ipython==8.15.0
