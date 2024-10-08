@@ -22,8 +22,6 @@ pip install -r requirements.txt
 
 ## Streamlit App
 
-<img src="./streamlit.png" alt="Streamlit App Preview" width="800"/>
-
 To run the app:
 
 ```shell
