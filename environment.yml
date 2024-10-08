@@ -1,0 +1,19 @@
+name: lfb_env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - matplotlib
+  - numpy
+  - pandas
+  - pip
+  - python=3.10
+  - scikit-learn=1.4.2
+  - seaborn
+  - shap=0.42.1
+  - streamlit
+  - xgboost
+  - pip
+  - pip:
+    - streamlit-shap==1.0.2
+    - gdown
