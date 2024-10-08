@@ -16,4 +16,4 @@ dependencies:
   - pip
   - pip:
     - streamlit-shap==1.0.2
-     - gdown
+    - gdown
