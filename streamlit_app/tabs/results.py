@@ -170,8 +170,15 @@ def load_y_test_pca():
     y_test_pca = pd.read_parquet(parquet_path)
     return y_test_pca
 
+'''
 def load_model():
     model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'model.joblib')
+    model = joblib.load(model_path)
+    return model
+'''
+
+def load_model():
+    model_path = Path(__file__).resolve().parent.parent / 'best_voting_clf_hard_model.pkl'
     model = joblib.load(model_path)
     return model
 
