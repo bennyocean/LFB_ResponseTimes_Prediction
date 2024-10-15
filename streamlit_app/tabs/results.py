@@ -171,7 +171,7 @@ def load_y_test_pca():
     return y_test_pca
 
 def load_model():
-    model_path = '/Users/bennyschellinger/Desktop/DataScience/Github/DataScientest_LFB_DataScience/streamlit_app/model.joblib'
+    model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'model.joblib')
     model = joblib.load(model_path)
     return model
 
