@@ -11,27 +11,51 @@ This project was developed by the following team :
 - Dr. Benjamin SCHELLINGER ([GitHub](https://github.com/bennyocean) / [LinkedIn](https://www.linkedin.com/in/benjaminschellinger/))
 
 ## Instructions
-
 You can browse and run the [notebooks](./notebooks). 
 
-You will need to install the dependencies (in a dedicated environment) :
+### 1. Create a Virtual Environment
+Navigate to the root of the project directory, and create a virtual environment using Python 3.10:
+
+To use the app locally, follow the steps below to set up the environment and install the necessary dependencies.
 
 ```shell
-conda create -f environment.yml
-conda activate lfb_env
+python3.10 -m venv venv
 ```
+
+### 2. Activate the Virtual Environment
+
+Activate the virtual environment:
+- On macOS/Linux:
+    ```shell
+    source venv/bin/activate
+    ```
+- On Windows:
+    ```shell
+    venv\Scripts\activate
+    ```
+
+### 3. Install Dependencies
+Once the virtual environment is activated, install the dependencies from the requirements.txt file:
+
+```shell
+pip install -r requirements.txt
+```
+This will ensure that all the necessary packages are installed with the correct versions.
 
 ## Streamlit App
-
-To run the app:
+To run the app, make sure your virtual environment is activated:
 
 ```shell
-conda activate lfb_env
+source venv/bin/activate   # On macOS/Linux
+venv\Scripts\activate      # On Windows
+```
+Then run the Streamlit app:
+
+```shell
 streamlit run streamlit_app/lfb_streamlit.py
 ```
-
-The app should then be available at [localhost:8501](http://localhost:8501).
+That's it! The app should now be running locally at [localhost:8501](http://localhost:8501) on your machine.
 
 ## MLOps
 
-In progress and soon available :)
+Soon available :)
