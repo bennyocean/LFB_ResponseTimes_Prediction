@@ -29,7 +29,7 @@ if page == pages[1]:
 
 # Model
 if page == pages[2]:
-    st.title("Modelling Storyline")
+    st.title("Model Selection & Optimization")
     model2.regression_design()
     model2.baseline_binary_classification()
     model2.advanced_binary_classification()
@@ -37,7 +37,7 @@ if page == pages[2]:
 
 # Prediction
 if page == pages[3]:
-    st.title("Prediction & Interpretation")
+    st.title("Model Prediction & Interpretability")
     results.load_pred_functions()
     results.load_interpret_functions()
     results.load_pc_load_functions()

@@ -15,6 +15,7 @@ from io import BytesIO
 import xgboost as xgb
 print(xgb.__version__)
 
+
 # Results
 
 shap.initjs()  # Initialize SHAP JavaScript library at the beginning of your Streamlit app
@@ -173,25 +174,10 @@ def load_y_test_pca():
     y_test_pca = pd.read_parquet(parquet_path)
     return y_test_pca
 
-'''def load_model():
-    model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'model.joblib')
-    #model_path = Path(__file__).resolve().parent.parent / 'best_voting_clf_hard_model.pkl'
-    model = joblib.load(model_path)
-    return model
-'''
-
-'''def load_model():
-    model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'vclf_hard_grid_resaved.pkl')
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model not found at {model_path}")
-    model = joblib.load(model_path)
-    return model'''
-
 def load_model():
     vclf_model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'vclf_hard_grid_resaved.pkl')
     model = joblib.load(vclf_model_path)
     return model
-
 
 def prediction():
     model = load_model()
@@ -387,8 +373,8 @@ def load_pred_functions():
 ### 3 Interpretability
 
 # Define paths to the resaved SHAP values and explainers for XGBoost
-xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'shap_values_xgb_resaved.pkl')
-xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'explainer_xgb_resaved.pkl')
+xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb_resaved.pkl')
+xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb_resaved.pkl')
 
 # Define paths to the original SHAP values and explainers for Random Forest and Logistic Regression
 rf_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_rf.pkl')
@@ -424,44 +410,6 @@ if os.path.exists(logreg_shap_values_path) and os.path.exists(logreg_explainer_p
     print(f"Logistic Regression SHAP values loaded successfully. Shape: {shap_values['Logistic Regression'].shape}")
 else:
     st.error(f"Logistic Regression SHAP files not found at {logreg_shap_values_path} or {logreg_explainer_path}")
-
-
-'''# Define paths to SHAP values and explainers
-xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb.pkl')
-xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb.pkl')'''
-
-'''# Define paths to the re-saved SHAP values and explainers
-xgb_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_xgb_resaved.pkl')
-xgb_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_xgb_resaved.pkl')
-
-rf_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_rf.pkl')
-rf_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_rf.pkl')
-
-logreg_shap_values_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'shap_values_logreg.pkl')
-logreg_explainer_path = os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'explainer_logreg.pkl')
-
-
-# Load SHAP values and explainers
-shap_values = {}
-explainers = {}
-
-if os.path.exists(xgb_shap_values_path) and os.path.exists(xgb_explainer_path):
-    shap_values['XGBoost'] = joblib.load(xgb_shap_values_path)
-    explainers['XGBoost'] = joblib.load(xgb_explainer_path)
-    print(f"XGBoost SHAP values loaded successfully. Shape: {shap_values['XGBoost'].shape}")
-else:
-    st.error(f"SHAP files not found at {xgb_shap_values_path} or {xgb_explainer_path}")
-
-
-if os.path.exists(rf_shap_values_path) and os.path.exists(rf_explainer_path):
-    shap_values['Random Forest'] = joblib.load(rf_shap_values_path)
-    explainers['Random Forest'] = joblib.load(rf_explainer_path)
-    print(f"Random Forest SHAP values loaded successfully. Shape: {shap_values['Random Forest'].shape}")
-
-if os.path.exists(logreg_shap_values_path) and os.path.exists(logreg_explainer_path):
-    shap_values['Logistic Regression'] = joblib.load(logreg_shap_values_path)
-    explainers['Logistic Regression'] = joblib.load(logreg_explainer_path)
-    print(f"Logistic Regression SHAP values loaded successfully. Shape: {shap_values['Logistic Regression'].shape}")'''
 
 
 ### 3.1 Mean Shap Value Comparison in the Voting Classifier
