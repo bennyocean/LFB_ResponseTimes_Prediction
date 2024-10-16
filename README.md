@@ -10,8 +10,9 @@ This project was developed by the following team :
 - Clemens PAULSEN ([GitHub](https://github.com/ClemensPaulsen) / [LinkedIn](https://www.linkedin.com/in/clemens-paulsen-a65a5a155/))
 - Dr. Benjamin SCHELLINGER ([GitHub](https://github.com/bennyocean) / [LinkedIn](https://www.linkedin.com/in/benjaminschellinger/))
 
-## Instructions
 You can browse and run the [notebooks](./notebooks). 
+
+## Streamlit App
 
 ### 1. Create a Virtual Environment
 Navigate to the root of the project directory, and create a virtual environment using Python 3.10:
@@ -42,7 +43,7 @@ pip install -r requirements.txt
 ```
 This will ensure that all the necessary packages are installed with the correct versions.
 
-## Streamlit App
+### 4. Run Streamlit App
 To run the app, make sure your virtual environment is activated:
 
 ```shell
@@ -56,6 +57,26 @@ streamlit run streamlit_app/lfb_streamlit.py
 ```
 That's it! The app should now be running locally at [localhost:8501](http://localhost:8501) on your machine.
 
+### 5. (Optional) Live App
+If you want to see the app without going through the installation process, simply visit the live Streamlit app hosted on Heroku:
+[LFB Response Times App](https://lfb-response-times-1319b829624f.herokuapp.com/)
+
+#### Quick Walkthrough:
+- **Home:**
+A brief introduction to the application.
+- **Data:**
+Insights into data analysis, statistics, feature engineering, and target variable creation.
+- **Model:**
+Presentation of models selected and hyperparameters tuning.
+- **Prediction:**
+Here you can predict response times and examine the model’s interpretability.
+- **Conclusion:**
+Summary and key take aways.
+- **About:**
+Background information on the project.
+
+#### Have fun! :)
+
 ## MLOps
 
-Soon available :)
+In progess and soon available!
