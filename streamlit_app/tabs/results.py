@@ -12,6 +12,8 @@ import os
 from pathlib import Path
 from io import BytesIO
 
+import xgboost as xgb
+print(xgb.__version__)
 
 # Results
 

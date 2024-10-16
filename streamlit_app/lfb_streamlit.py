@@ -3,11 +3,6 @@ import os
 from pathlib import Path
 from tabs import eda, results, conclusion, model2, home, about
 
-import sys
-
-# Display the current Python version
-st.write(f"Running on Python version: {sys.version}")
-
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
