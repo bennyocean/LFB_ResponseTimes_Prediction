@@ -1,6 +1,6 @@
 __pycache__/
 .ipynb_checkpoints
-.DS_Store
+streamlit_app/.DS_Store
 venv/
 environment.yml
 notebooks/test.py
