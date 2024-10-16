@@ -7,3 +7,6 @@ notebooks/test.py
 xgboost_model.json
 .devcontainer/
 .vscode/
+Dockerfile
+Procfile
+setup.sh
