@@ -5,3 +5,5 @@ venv/
 environment.yml
 notebooks/test.py
 xgboost_model.json
+.devcontainer/
+.vscode/
