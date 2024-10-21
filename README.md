@@ -79,4 +79,4 @@ Background information on the project.
 
 ## MLOps
 
-In progess and soon available!
+Please refere to the [MLOps](https://github.com/bennyocean/LFB_MLOps.git) repo for getting insights to the deployment, automation, and monitoring of our ML models.
